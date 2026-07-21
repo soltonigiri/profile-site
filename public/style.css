@@ -2,7 +2,7 @@
   color-scheme: dark;
   --ink: #f0f4f6;
   --muted: #9baab4;
-  --faint: #6f7e88;
+  --faint: #7c8c96;
   --accent: #79a9bc;
   --line: rgba(174, 199, 211, 0.18);
   --profile: #091117;
@@ -36,6 +36,10 @@ body {
   font-size: 16px;
   line-height: 1.7;
   text-rendering: optimizeLegibility;
+}
+
+body.menu-open {
+  overflow: hidden;
 }
 
 a {
@@ -170,20 +174,20 @@ img {
   border-left: 1px solid var(--line);
   background: transparent;
   color: var(--faint);
-  cursor: pointer;
   font-size: 0.68rem;
   font-weight: 700;
   letter-spacing: 0.08em;
   line-height: 1;
 }
 
-.language-toggle [data-language-option] {
+.language-toggle a,
+.language-toggle span {
   color: var(--faint);
   transition: color 180ms ease;
 }
 
-.language-toggle:hover [data-language-option],
-.language-toggle [data-language-option].is-active {
+.language-toggle a:hover,
+.language-toggle .is-active {
   color: var(--ink);
 }
 
@@ -318,8 +322,8 @@ img {
 .profile-links .icon-only-link,
 .contact-links .icon-only-link {
   justify-content: center;
-  width: 24px;
-  min-height: 24px;
+  width: 44px;
+  min-height: 44px;
 }
 
 .profile-links a:hover,
@@ -647,6 +651,55 @@ img {
   color: var(--accent);
 }
 
+.error-page {
+  display: grid;
+  min-height: 100svh;
+  background:
+    radial-gradient(circle at 50% 35%, rgba(121, 169, 188, 0.1), transparent 26rem),
+    var(--profile);
+  place-items: center;
+}
+
+.error-page main {
+  width: min(calc(100% - 48px), 680px);
+  text-align: center;
+}
+
+.error-code {
+  margin: 0;
+  color: var(--accent);
+  font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: clamp(4.5rem, 18vw, 9rem);
+  font-weight: 760;
+  letter-spacing: -0.08em;
+  line-height: 0.9;
+}
+
+.error-page h1 {
+  margin: 30px 0 0;
+  font-size: clamp(1.5rem, 5vw, 2.25rem);
+}
+
+.error-page p:not(.error-code) {
+  margin: 18px 0 0;
+  color: var(--muted);
+}
+
+.error-home-link {
+  display: inline-flex;
+  margin-top: 32px;
+  padding: 11px 18px;
+  border: 1px solid var(--accent);
+  color: var(--ink);
+  font-weight: 650;
+  transition: background-color 180ms ease, color 180ms ease;
+}
+
+.error-home-link:hover {
+  background: var(--accent);
+  color: var(--profile);
+}
+
 :focus-visible {
   outline: 2px solid var(--accent);
   outline-offset: 5px;
@@ -808,5 +861,6 @@ img {
   *::after {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
+    transition-delay: 0ms !important;
   }
 }
