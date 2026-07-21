@@ -4,6 +4,7 @@ import { join } from "node:path";
 
 import { launch } from "chrome-launcher";
 import lighthouse from "lighthouse";
+import { chromium } from "@playwright/test";
 
 const targets = [
   { name: "ja", url: "http://127.0.0.1:8788/" },
@@ -19,7 +20,7 @@ const thresholds = {
 
 const chromeDataDirectory = await mkdtemp(join(tmpdir(), "profile-site-lighthouse-"));
 const chrome = await launch({
-  chromePath: process.env.CHROME_PATH,
+  chromePath: process.env.CHROME_PATH ?? chromium.executablePath(),
   chromeFlags: [
     "--headless",
     "--no-sandbox",
