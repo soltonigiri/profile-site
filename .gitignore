@@ -1,0 +1,9 @@
+.wrangler/
+node_modules/
+
+.dev.vars*
+.env*
+!.env.example
+
+.DS_Store
+/ChatGPT Image *.png
