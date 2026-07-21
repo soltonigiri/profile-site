@@ -46,6 +46,31 @@ test("English route has independent metadata", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
 });
 
+test("language switcher is one full-size control and toggles both ways", async ({ page }) => {
+  await mockBlogApi(page);
+  await page.goto("/");
+
+  const englishSwitcher = page.getByRole("link", { name: "英語に切り替える" });
+  await expect(englishSwitcher).toHaveAttribute("href", "/en/");
+  expect((await englishSwitcher.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+  await englishSwitcher.click();
+
+  const japaneseSwitcher = page.getByRole("link", { name: "Switch to Japanese" });
+  await expect(page).toHaveURL(/\/en\/$/);
+  await expect(japaneseSwitcher).toHaveAttribute("href", "/");
+  expect((await japaneseSwitcher.boundingBox())?.height).toBeGreaterThanOrEqual(44);
+});
+
+test("all X links and structured data use the current account", async ({ page }) => {
+  await mockBlogApi(page);
+  await page.goto("/");
+
+  const xLinks = page.locator('a[href="https://x.com/solt_onigiri_"]');
+  await expect(xLinks).toHaveCount(2);
+  const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
+  expect(structuredData).toContain("https://x.com/solt_onigiri_");
+});
+
 test("unknown routes return the custom 404 with a 404 status", async ({ page }) => {
   const response = await page.goto("/definitely-not-a-page");
   expect(response?.status()).toBe(404);
