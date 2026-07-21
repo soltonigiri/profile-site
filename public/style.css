@@ -169,7 +169,8 @@ img {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding-left: clamp(14px, 2vw, 22px);
+  min-height: 44px;
+  padding-inline: clamp(14px, 2vw, 22px) 0;
   border: 0;
   border-left: 1px solid var(--line);
   background: transparent;
@@ -180,15 +181,18 @@ img {
   line-height: 1;
 }
 
-.language-toggle a,
 .language-toggle span {
   color: var(--faint);
   transition: color 180ms ease;
 }
 
-.language-toggle a:hover,
 .language-toggle .is-active {
   color: var(--ink);
+}
+
+.language-toggle:hover span:not(.is-active),
+.language-toggle:focus-visible span:not(.is-active) {
+  color: var(--accent);
 }
 
 .menu-button {
@@ -726,7 +730,8 @@ img {
   }
 
   .language-toggle {
-    padding-left: 0;
+    min-width: 58px;
+    padding-inline: 7px;
     border-left: 0;
   }
 
