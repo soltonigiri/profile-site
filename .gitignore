@@ -1,5 +1,8 @@
 .wrangler/
 node_modules/
+.lighthouseci/
+playwright-report/
+test-results/
 
 .dev.vars*
 .env*
