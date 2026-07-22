@@ -1,5 +1,7 @@
 # soltonigiri profile site
 
+![profile-site thumbnail](./public/assets/og-image-profile-site.png)
+
 日本語・英語に対応した、Cloudflare Pages上のプロフィールサイトです。
 
 - Production: https://soltonigiri.pages.dev/
