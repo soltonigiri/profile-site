@@ -78,22 +78,29 @@
     <main id="main">
       <section class="section hero" id="profile" data-section>
         <div class="container hero-inner">
-          <picture>
-            <source
-              srcset="/assets/immutable/profile-onigiri-awake.304.v1.avif"
-              type="image/avif"
-              data-profile-source
-            >
-            <img
-              class="profile-image"
-              src="/assets/immutable/profile-onigiri-awake.304.v1.webp"
-              alt="An onigiri with its eyes open"
-              width="152"
-              height="152"
-              fetchpriority="high"
-              data-profile-image
-            >
-          </picture>
+          <button
+            class="profile-character"
+            type="button"
+            aria-label="Poke the onigiri"
+            data-profile-character
+          >
+            <picture>
+              <source
+                srcset="/assets/immutable/profile-onigiri-awake.304.v1.avif"
+                type="image/avif"
+                data-profile-source
+              >
+              <img
+                class="profile-image"
+                src="/assets/immutable/profile-onigiri-awake.304.v1.webp"
+                alt="An onigiri with its eyes open"
+                width="152"
+                height="152"
+                fetchpriority="high"
+                data-profile-image
+              >
+            </picture>
+          </button>
           <h1>Shiomusubi @soltonigiri</h1>
           <ul class="profile-meta" aria-label="Profile details">
             <li>16 y/o</li>
@@ -133,6 +140,11 @@
             A software engineer who enjoys AI and indie development.<br>
             I currently work independently on software projects while exploring AI agents, local LLMs, and indie development.
           </p>
+          <a class="availability-link" href="#contact">
+            <span class="availability-dot" aria-hidden="true"></span>
+            <span>Available for freelance work</span>
+            <span aria-hidden="true">↓</span>
+          </a>
         </div>
       </section>
 
