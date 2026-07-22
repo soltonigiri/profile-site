@@ -71,6 +71,27 @@ test("all X links and structured data use the current account", async ({ page })
   expect(structuredData).toContain("https://x.com/solt_onigiri_");
 });
 
+test("About copy lives in Profile and scroll navigation follows section order", async ({ page }) => {
+  await mockBlogApi(page);
+  await page.goto("/");
+
+  await expect(page.locator('[data-nav] a[href="#about"]')).toHaveCount(0);
+  await expect(page.locator("#about")).toHaveCount(0);
+  await expect(page.locator("#profile .profile-about")).toContainText(
+    "AIと個人開発が好きなソフトウェアエンジニア。",
+  );
+
+  for (const sectionId of ["profile", "projects", "blog", "skills", "contact"]) {
+    await page.locator(`#${sectionId}`).evaluate((section) =>
+      section.scrollIntoView({ behavior: "instant", block: "start" }),
+    );
+    await expect(page.locator(`[data-nav] a[href="#${sectionId}"]`)).toHaveAttribute(
+      "aria-current",
+      "page",
+    );
+  }
+});
+
 test("unknown routes return the custom 404 with a 404 status", async ({ page }) => {
   const response = await page.goto("/definitely-not-a-page");
   expect(response?.status()).toBe(404);
