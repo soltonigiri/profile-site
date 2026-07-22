@@ -4,6 +4,7 @@ const navigationLinks = [...document.querySelectorAll("[data-nav] a")];
 const sections = [...document.querySelectorAll("[data-section]")];
 const year = document.querySelector("[data-year]");
 const blogList = document.querySelector("[data-blog-list]");
+const profileCharacter = document.querySelector("[data-profile-character]");
 const profileImage = document.querySelector("[data-profile-image]");
 const profileSource = document.querySelector("[data-profile-source]");
 const currentLanguage = document.documentElement.lang === "en" ? "en" : "ja";
@@ -66,6 +67,19 @@ function updateProfileImage() {
 updateProfileImage();
 window.setInterval(updateProfileImage, 60_000);
 document.addEventListener("visibilitychange", updateProfileImage);
+
+let profileStartleTimer;
+
+profileCharacter?.addEventListener("click", () => {
+  window.clearTimeout(profileStartleTimer);
+  profileCharacter.classList.remove("is-startled");
+  void profileCharacter.offsetWidth;
+  profileCharacter.classList.add("is-startled");
+
+  profileStartleTimer = window.setTimeout(() => {
+    profileCharacter.classList.remove("is-startled");
+  }, 760);
+});
 
 if (year) {
   year.textContent = String(new Date().getFullYear());

@@ -246,14 +246,67 @@ img {
   text-transform: uppercase;
 }
 
+.profile-character {
+  position: relative;
+  width: fit-content;
+  margin: 0 0 26px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  line-height: 0;
+}
+
 .profile-image {
   --profile-image-size: clamp(108px, 11vw, 132px);
 
   width: var(--profile-image-size);
   height: var(--profile-image-size);
   aspect-ratio: 1;
-  margin-bottom: 26px;
+  margin: 0;
   object-fit: contain;
+  transform-origin: 50% 85%;
+}
+
+.profile-character.is-startled .profile-image {
+  animation: onigiri-startled 720ms linear;
+  will-change: transform;
+}
+
+@keyframes onigiri-startled {
+  0% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+    animation-timing-function: cubic-bezier(0.33, 0, 0.67, 1);
+  }
+
+  14% {
+    transform: translate3d(0, 3px, 0) rotate(0deg) scale(1.035, 0.96);
+    animation-timing-function: cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  44% {
+    transform: translate3d(0, -16px, 0) rotate(-3.5deg) scale(0.99, 1.015);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+  }
+
+  58% {
+    transform: translate3d(0, -11px, 0) rotate(2deg) scale(1);
+    animation-timing-function: cubic-bezier(0.4, 0, 0.8, 0.7);
+  }
+
+  76% {
+    transform: translate3d(0, 1px, 0) rotate(-1deg) scale(1.025, 0.975);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  88% {
+    transform: translate3d(0, -2px, 0) rotate(0.4deg) scale(0.997, 1.003);
+    animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  100% {
+    transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+  }
 }
 
 .hero h1 {
@@ -341,6 +394,33 @@ img {
   color: #cbd5da;
   font-size: 0.95rem;
   line-height: 1.9;
+}
+
+.availability-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  margin-top: 22px;
+  border-bottom: 1px solid var(--line);
+  color: #cbd5da;
+  font-size: 0.8rem;
+  font-weight: 650;
+  letter-spacing: 0.035em;
+  transition: border-color 180ms ease, color 180ms ease;
+}
+
+.availability-link:hover {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.availability-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(121, 169, 188, 0.1);
+  flex: 0 0 auto;
 }
 
 .section-projects {
@@ -841,5 +921,9 @@ img {
     scroll-behavior: auto !important;
     transition-duration: 0.01ms !important;
     transition-delay: 0ms !important;
+  }
+
+  .profile-character.is-startled .profile-image {
+    animation: none;
   }
 }

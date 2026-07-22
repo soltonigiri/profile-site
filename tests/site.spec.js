@@ -44,6 +44,10 @@ test("English route has independent metadata", async ({ page }) => {
     "https://soltonigiri.pages.dev/en/",
   );
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  await expect(page.getByRole("link", { name: /Available for freelance work/ })).toHaveAttribute(
+    "href",
+    "#contact",
+  );
 });
 
 test("language switcher is one full-size control and toggles both ways", async ({ page }) => {
@@ -80,6 +84,10 @@ test("About copy lives in Profile and scroll navigation follows section order", 
   await expect(page.locator("#profile .profile-about")).toContainText(
     "AIと個人開発が好きなソフトウェアエンジニア。",
   );
+  await expect(page.getByRole("link", { name: /仕事のご依頼を受付中/ })).toHaveAttribute(
+    "href",
+    "#contact",
+  );
 
   for (const sectionId of ["profile", "projects", "blog", "skills", "contact"]) {
     await page.locator(`#${sectionId}`).evaluate((section) =>
@@ -90,6 +98,18 @@ test("About copy lives in Profile and scroll navigation follows section order", 
       "page",
     );
   }
+});
+
+test("profile character reacts to pointer and keyboard activation without reaction text", async ({ page }) => {
+  await mockBlogApi(page);
+  await page.goto("/");
+
+  const character = page.getByRole("button", { name: "おにぎりをつつく" });
+  await character.focus();
+  await page.keyboard.press("Enter");
+  await expect(character).toHaveClass(/is-startled/);
+  await expect(page.getByText("うわっ", { exact: true })).toHaveCount(0);
+  await expect(character).not.toHaveClass(/is-startled/, { timeout: 1_500 });
 });
 
 test("unknown routes return the custom 404 with a 404 status", async ({ page }) => {

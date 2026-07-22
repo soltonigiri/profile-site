@@ -102,22 +102,29 @@
     <main id="main">
       <section class="section hero" id="profile" data-section>
         <div class="container hero-inner">
-          <picture>
-            <source
-              srcset="/assets/immutable/profile-onigiri-awake.304.v1.avif"
-              type="image/avif"
-              data-profile-source
-            >
-            <img
-              class="profile-image"
-              src="/assets/immutable/profile-onigiri-awake.304.v1.webp"
-              alt="目を開けたおにぎり"
-              width="152"
-              height="152"
-              fetchpriority="high"
-              data-profile-image
-            >
-          </picture>
+          <button
+            class="profile-character"
+            type="button"
+            aria-label="おにぎりをつつく"
+            data-profile-character
+          >
+            <picture>
+              <source
+                srcset="/assets/immutable/profile-onigiri-awake.304.v1.avif"
+                type="image/avif"
+                data-profile-source
+              >
+              <img
+                class="profile-image"
+                src="/assets/immutable/profile-onigiri-awake.304.v1.webp"
+                alt="目を開けたおにぎり"
+                width="152"
+                height="152"
+                fetchpriority="high"
+                data-profile-image
+              >
+            </picture>
+          </button>
           <h1>しおむすび@soltonigiri</h1>
           <ul class="profile-meta" aria-label="プロフィール情報">
             <li>16 y/o</li>
@@ -161,6 +168,11 @@
             AIと個人開発が好きなソフトウェアエンジニア。現在は個人でソフトウェア開発の仕事を<span class="no-wrap">請け負いながら</span>、<br>
             AIエージェントやローカルLLM、個人開発に取り組んでいます。
           </p>
+          <a class="availability-link" href="#contact">
+            <span class="availability-dot" aria-hidden="true"></span>
+            <span>仕事のご依頼を受付中</span>
+            <span aria-hidden="true">↓</span>
+          </a>
         </div>
       </section>
 
