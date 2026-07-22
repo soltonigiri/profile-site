@@ -6,7 +6,6 @@
   --accent: #79a9bc;
   --line: rgba(174, 199, 211, 0.18);
   --profile: #091117;
-  --about: #121d25;
   --projects: #0d151c;
   --blog: #111a21;
   --skills: #17232c;
@@ -336,8 +335,12 @@ img {
   color: var(--accent);
 }
 
-.section-about {
-  background: var(--about);
+.profile-about {
+  max-width: 820px;
+  margin: 28px 0 0;
+  color: #cbd5da;
+  font-size: 0.95rem;
+  line-height: 1.9;
 }
 
 .section-projects {
@@ -356,16 +359,9 @@ img {
   background: var(--contact);
 }
 
-.section-about,
 .section-skills,
 .section-contact {
   padding-block: clamp(68px, 7vw, 96px);
-}
-
-.split-layout {
-  display: grid;
-  grid-template-columns: minmax(160px, 0.42fr) minmax(0, 2fr);
-  gap: clamp(40px, 5vw, 68px);
 }
 
 .section-heading h2,
@@ -386,22 +382,6 @@ img {
   margin-top: 22px;
   background: var(--accent);
   content: "";
-}
-
-.about-copy {
-  min-width: 0;
-  padding-top: 2px;
-}
-
-.about-copy p {
-  max-width: 820px;
-  margin: 26px 0 0;
-  color: var(--muted);
-  overflow-wrap: break-word;
-}
-
-.about-copy p:first-child {
-  margin-top: 0;
 }
 
 .no-wrap {
@@ -781,11 +761,6 @@ img {
     padding-bottom: 82px;
   }
 
-  .split-layout {
-    grid-template-columns: 1fr;
-    gap: 52px;
-  }
-
   .section-heading-row {
     align-items: flex-start;
     flex-direction: column;
@@ -820,7 +795,6 @@ img {
     padding-block: 88px;
   }
 
-  .section-about,
   .section-skills,
   .section-contact {
     padding-block: 68px;

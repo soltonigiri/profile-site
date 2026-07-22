@@ -188,30 +188,50 @@ if (menuButton && navigation) {
   window.addEventListener("resize", () => setMenuOpen(false));
 }
 
-if ("IntersectionObserver" in window) {
-  const observer = new IntersectionObserver(
-    (entries) => {
-      const visibleSection = entries
-        .filter((entry) => entry.isIntersecting)
-        .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+let navigationFrame = 0;
 
-      if (!visibleSection) return;
+function updateActiveNavigation() {
+  navigationFrame = 0;
+  if (sections.length === 0 || navigationLinks.length === 0) return;
 
-      navigationLinks.forEach((link) => {
-        const isCurrent = link.getAttribute("href") === `#${visibleSection.target.id}`;
+  const headerHeight = Number.parseFloat(
+    getComputedStyle(document.documentElement).getPropertyValue("--header-height"),
+  ) || 0;
+  const activationPoint = window.scrollY + headerHeight + Math.min(window.innerHeight * 0.25, 180);
+  const isAtPageEnd =
+    window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 2;
+  let activeSection = sections[0];
 
-        if (isCurrent) {
-          link.setAttribute("aria-current", "page");
-        } else {
-          link.removeAttribute("aria-current");
-        }
-      });
-    },
-    {
-      rootMargin: "-30% 0px -55%",
-      threshold: [0, 0.25, 0.5],
-    },
-  );
+  for (const section of sections) {
+    if (section.offsetTop > activationPoint) break;
+    activeSection = section;
+  }
 
-  sections.forEach((section) => observer.observe(section));
+  if (isAtPageEnd) activeSection = sections.at(-1);
+
+  navigationLinks.forEach((link) => {
+    const isCurrent = link.getAttribute("href") === `#${activeSection.id}`;
+
+    if (isCurrent) {
+      link.setAttribute("aria-current", "page");
+    } else {
+      link.removeAttribute("aria-current");
+    }
+  });
+}
+
+function requestNavigationUpdate() {
+  if (navigationFrame) return;
+  navigationFrame = window.requestAnimationFrame(updateActiveNavigation);
+}
+
+window.addEventListener("scroll", requestNavigationUpdate, { passive: true });
+window.addEventListener("resize", requestNavigationUpdate);
+window.addEventListener("load", requestNavigationUpdate);
+updateActiveNavigation();
+
+if ("ResizeObserver" in window) {
+  const layoutObserver = new ResizeObserver(requestNavigationUpdate);
+  const main = document.querySelector("main");
+  if (main) layoutObserver.observe(main);
 }
