@@ -1,6 +1,13 @@
 const menuButton = document.querySelector("[data-menu-button]");
 const navigation = document.querySelector("[data-nav]");
 const navigationLinks = [...document.querySelectorAll("[data-nav] a")];
+const languageToggle = document.querySelector(".language-toggle");
+const menuBackgroundElements = [
+  document.querySelector(".skip-link"),
+  document.querySelector(".brand"),
+  document.querySelector("main"),
+  document.querySelector(".site-footer"),
+].filter(Boolean);
 const sections = [...document.querySelectorAll("[data-section]")];
 const year = document.querySelector("[data-year]");
 const blogList = document.querySelector("[data-blog-list]");
@@ -173,6 +180,9 @@ function setMenuOpen(isOpen, { restoreFocus = false } = {}) {
   menuButton.setAttribute("aria-expanded", String(shouldOpen));
   navigation.dataset.open = String(shouldOpen);
   navigation.inert = isMobileNavigation() && !shouldOpen;
+  menuBackgroundElements.forEach((element) => {
+    element.inert = shouldOpen;
+  });
   document.body.classList.toggle("menu-open", shouldOpen);
   updateMenuLabel(shouldOpen);
 
@@ -194,8 +204,25 @@ if (menuButton && navigation) {
   navigationLinks.forEach((link) => link.addEventListener("click", () => setMenuOpen(false)));
 
   document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && menuButton.getAttribute("aria-expanded") === "true") {
+    const isOpen = menuButton.getAttribute("aria-expanded") === "true";
+
+    if (event.key === "Escape" && isOpen) {
       setMenuOpen(false, { restoreFocus: true });
+      return;
+    }
+
+    if (event.key === "Tab" && isOpen) {
+      const menuFocusables = [...navigationLinks, languageToggle, menuButton].filter(Boolean);
+      const firstFocusable = menuFocusables[0];
+      const lastFocusable = menuFocusables.at(-1);
+
+      if (event.shiftKey && document.activeElement === firstFocusable) {
+        event.preventDefault();
+        lastFocusable?.focus();
+      } else if (!event.shiftKey && document.activeElement === lastFocusable) {
+        event.preventDefault();
+        firstFocusable?.focus();
+      }
     }
   });
 
