@@ -3,6 +3,8 @@ node_modules/
 .lighthouseci/
 playwright-report/
 test-results/
+.playwright-mcp/
+source-assets/
 
 .dev.vars*
 .env*
