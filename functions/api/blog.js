@@ -3,9 +3,8 @@ const ARTICLE_ORIGIN = "https://sizu.me";
 const ARTICLE_PATH_PREFIX = "/soltonigiri/posts/";
 const FETCH_TIMEOUT_MS = 5_000;
 const MAX_FEED_BYTES = 512 * 1024;
-const REFRESH_AFTER_MS = 30 * 60 * 1_000;
-const CACHE_TTL_SECONDS = 7 * 24 * 60 * 60;
-const BROWSER_TTL_SECONDS = 5 * 60;
+const CACHE_NAMESPACE = "privacy-v2";
+const CACHE_TTL_SECONDS = 5 * 60;
 
 const API_SECURITY_HEADERS = {
   "Content-Security-Policy": "default-src 'none'; frame-ancestors 'none'",
@@ -115,7 +114,7 @@ function createStoredResponse(posts) {
 
 function createClientResponse(response, cacheStatus) {
   const headers = new Headers(response.headers);
-  headers.set("Cache-Control", `public, max-age=${BROWSER_TTL_SECONDS}`);
+  headers.set("Cache-Control", "no-store");
   headers.set("X-Profile-Cache", cacheStatus);
   headers.delete("X-Profile-Fetched-At");
 
@@ -162,30 +161,15 @@ async function fetchFeed() {
   return createStoredResponse(parseFeed(await readBoundedText(response)));
 }
 
-function isRefreshDue(response) {
-  const fetchedAt = Date.parse(response.headers.get("X-Profile-Fetched-At") ?? "");
-  return !Number.isFinite(fetchedAt) || Date.now() - fetchedAt >= REFRESH_AFTER_MS;
-}
-
 export async function onRequestGet(context) {
   const cache = caches.default;
   const cacheUrl = new URL("/api/blog", context.request.url);
+  cacheUrl.searchParams.set("cache", CACHE_NAMESPACE);
   const cacheKey = new Request(cacheUrl.toString(), { method: "GET" });
   const cached = await cache.match(cacheKey);
 
   if (cached) {
-    const refreshDue = isRefreshDue(cached);
-    if (refreshDue) {
-      context.waitUntil(
-        fetchFeed()
-          .then((response) => cache.put(cacheKey, response))
-          .catch((error) => {
-            logError("blog_feed_background_refresh_failed", error);
-          }),
-      );
-    }
-
-    return createClientResponse(cached, refreshDue ? "STALE" : "HIT");
+    return createClientResponse(cached, "HIT");
   }
 
   try {
