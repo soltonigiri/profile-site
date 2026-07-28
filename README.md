@@ -33,7 +33,7 @@ scripts/lighthouse.mjs       Lighthouse検査
 wrangler.jsonc               Cloudflare Pages設定
 ```
 
-Blogはブラウザから`/api/blog`を取得します。Pages Function側でRSSの取得先、応答サイズ、タイムアウト、キャッシュを管理しています。
+Blogはブラウザから`/api/blog`を取得します。Pages Function側でRSSの取得先、応答サイズ、タイムアウト、5分間の内部キャッシュを管理しています。非公開化した記事が古いブラウザ・CDNキャッシュに残らないよう、API応答自体は保存させません。
 
 生成元の大容量PNGはローカルの`source-assets/`に保管し、GitとCloudflare Pagesの配信対象から除外しています。
 
