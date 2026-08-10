@@ -32,6 +32,8 @@ test("English route has independent metadata", async ({ page }) => {
     "https://soltonigiri.pages.dev/en/",
   );
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
+  const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
+  expect(JSON.parse(structuredData).url).toBe("https://soltonigiri.pages.dev/en/");
   await expect(page.getByRole("link", { name: /Available for freelance work/ })).toHaveAttribute(
     "href",
     "#contact",

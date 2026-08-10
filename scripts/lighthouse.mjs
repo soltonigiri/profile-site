@@ -18,6 +18,27 @@ const thresholds = {
   seo: 0.95,
 };
 
+const TARGET_CHECK_TIMEOUT_MS = 5_000;
+
+async function ensureTargetIsAvailable(target) {
+  try {
+    const response = await fetch(target.url, {
+      signal: AbortSignal.timeout(TARGET_CHECK_TIMEOUT_MS),
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}`);
+    }
+  } catch (error) {
+    const reason = error instanceof Error ? error.message : String(error);
+    throw new Error(
+      `Lighthouse target is unavailable: ${target.url} (${reason}). Start the local server with npm run dev.`,
+    );
+  }
+}
+
+await Promise.all(targets.map(ensureTargetIsAvailable));
+
 const chromeDataDirectory = await mkdtemp(join(tmpdir(), "profile-site-lighthouse-"));
 const chrome = await launch({
   chromePath: process.env.CHROME_PATH ?? chromium.executablePath(),
