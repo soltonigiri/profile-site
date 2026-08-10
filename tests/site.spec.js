@@ -3,7 +3,7 @@ import { expect, test } from "@playwright/test";
 
 const importantExternalUrls = {
   youtubeMarkdownArchiver: "https://github.com/soltonigiri/youtube-markdown-archiver",
-  scpMcp: "https://github.com/soltonigiri/scp-mcp",
+  githubProfile: "https://github.com/soltonigiri",
   profileSite: "https://github.com/soltonigiri/profile-site",
   x: "https://x.com/solt_onigiri_",
   signal:
@@ -56,7 +56,7 @@ test("all X links and structured data use the current account", async ({ page })
   await page.goto("/");
 
   const xLinks = page.locator(`a[href="${importantExternalUrls.x}"]`);
-  await expect(xLinks).toHaveCount(2);
+  await expect(xLinks).toHaveCount(1);
   const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
   expect(structuredData).toContain("https://x.com/solt_onigiri_");
 });
@@ -67,26 +67,39 @@ test("both languages use the shared social icon sprite", async ({ page }) => {
 
     await expect(
       page.locator('use[href^="/assets/immutable/social-icons.v1.svg#"]'),
-    ).toHaveCount(5);
+    ).toHaveCount(3);
     await expect(page.locator(".svg-sprite")).toHaveCount(0);
     await expect(page.locator(".social-icon path")).toHaveCount(0);
   }
 });
 
-test("Projects and Contact keep the important external URLs", async ({ page }) => {
+test("Projects, Contact, and footer keep the important external URLs", async ({ page }) => {
   for (const route of ["/", "/en/"]) {
     await page.goto(route);
 
     const projects = page.locator("#projects");
+    const projectItems = projects.locator(".project-item");
     await expect(
       projects.locator(`a[href="${importantExternalUrls.youtubeMarkdownArchiver}"]`),
     ).toHaveCount(1);
-    await expect(projects.locator(`a[href="${importantExternalUrls.scpMcp}"]`)).toHaveCount(1);
-    const sourceLink = projects.locator(`a[href="${importantExternalUrls.profileSite}"]`);
-    await expect(sourceLink).toHaveCount(1);
-    await expect(sourceLink).toContainText(
-      route === "/" ? "このサイトのしくみ" : "How this site works",
+    await expect(projectItems).toHaveCount(3);
+    await expect(projectItems.nth(0)).toHaveAttribute("data-client-work", "");
+    await expect(projectItems.nth(0)).toContainText(
+      route === "/"
+        ? "フォーム入力からPDF帳票・メール通知までを自動化"
+        : "Automated PDF documents and email notifications from form submissions",
     );
+    await expect(projectItems.nth(1)).toHaveAttribute("data-oss-contributions", "");
+    await expect(projectItems.nth(2)).toHaveAttribute(
+      "href",
+      importantExternalUrls.youtubeMarkdownArchiver,
+    );
+    const contributionsLink = projects.locator(`a[href="${importantExternalUrls.githubProfile}"]`);
+    await expect(contributionsLink).toHaveCount(1);
+    await expect(contributionsLink).toContainText(
+      route === "/" ? "外部OSSへの貢献" : "Open-source contributions",
+    );
+    await expect(contributionsLink).not.toContainText("activist · mcp-migrate · OpenClaw");
 
     const contact = page.locator("#contact");
     const xLink = contact.locator(`a[href="${importantExternalUrls.x}"]`);
@@ -94,8 +107,17 @@ test("Projects and Contact keep the important external URLs", async ({ page }) =
     await expect(xLink).toHaveCount(1);
     await expect(signalLink).toHaveCount(1);
     await expect(xLink).toHaveAttribute("target", "_blank");
+    await expect(xLink).toHaveAttribute("aria-label", "X");
+    await expect(xLink).toHaveClass(/icon-only-link/);
+    await expect(xLink).toHaveText("");
     await expect(signalLink).toHaveAttribute("target", "_blank");
-    await expect(xLink).toContainText(route === "/" ? "Xで相談する" : "Contact via X");
+
+    const siteSource = page.locator(`.site-footer a[href="${importantExternalUrls.profileSite}"]`);
+    await expect(siteSource).toHaveCount(1);
+    await expect(siteSource).toHaveText(
+      route === "/" ? "このサイトのしくみ" : "How this site works",
+    );
+    await expect(siteSource).toHaveAttribute("target", "_blank");
   }
 });
 
@@ -139,14 +161,36 @@ test("selected client work shows delivery proof without publishing the contract 
 
   const clientWork = page.locator("[data-client-work]");
   await expect(clientWork).toContainText("フォーム入力からPDF帳票・メール通知までを自動化");
-  await expect(clientWork).toContainText("Paid client work · Delivered · ★ 5.0 / 5");
+  await expect(clientWork).toContainText(
+    "WordPressでフォーム入力4項目をPDFに反映。実フォームでメールとPDFの動作を確認。",
+  );
+  await expect(clientWork).toContainText("Paid client work · ★ 5.0 / 5");
+  await expect(clientWork).not.toContainText("申込者へのPDF案内と管理者通知までを自動化");
+  await expect(clientWork).not.toContainText("Delivered");
+  await expect(clientWork).not.toContainText("対応");
+  await expect(clientWork).not.toContainText("結果");
+  await expect(clientWork).not.toContainText("公開していません");
+  await expect(clientWork).not.toContainText("未計測");
   await expect(clientWork).not.toContainText("12,000");
   await expect(clientWork.locator("a")).toHaveCount(0);
+  await expect(clientWork.locator("details")).toHaveCount(0);
 
   await page.goto("/en/");
-  await expect(page.locator("[data-client-work]")).toContainText(
+  const englishClientWork = page.locator("[data-client-work]");
+  await expect(englishClientWork).toContainText(
     "Automated PDF documents and email notifications from form submissions",
   );
+  await expect(englishClientWork).toContainText(
+    "Mapped four WordPress form fields into a PDF and verified email delivery and PDF output through the live form.",
+  );
+  await expect(englishClientWork).toContainText("Paid client work · ★ 5.0 / 5");
+  await expect(englishClientWork).not.toContainText("applicant access by email");
+  await expect(englishClientWork).not.toContainText("Delivered");
+  await expect(englishClientWork).not.toContainText("Implementation");
+  await expect(englishClientWork).not.toContainText("Result");
+  await expect(englishClientWork).not.toContainText("remain private");
+  await expect(englishClientWork).not.toContainText("not measured");
+  await expect(englishClientWork.locator("details")).toHaveCount(0);
 });
 
 test("unknown routes return the custom 404 with a 404 status", async ({ page }) => {
