@@ -10,7 +10,6 @@ const menuBackgroundElements = [
 ].filter(Boolean);
 const sections = [...document.querySelectorAll("[data-section]")];
 const year = document.querySelector("[data-year]");
-const blogList = document.querySelector("[data-blog-list]");
 const profileCharacter = document.querySelector("[data-profile-character]");
 const profileImage = document.querySelector("[data-profile-image]");
 const profileSource = document.querySelector("[data-profile-source]");
@@ -91,77 +90,6 @@ profileCharacter?.addEventListener("click", () => {
 if (year) {
   year.textContent = String(new Date().getFullYear());
 }
-
-function createBlogItem(post) {
-  const link = document.createElement("a");
-  const main = document.createElement("span");
-  const title = document.createElement("span");
-  const meta = document.createElement("span");
-  const action = document.createElement("span");
-  const arrow = document.createElement("span");
-  const destination = document.createElement("span");
-  const publishedAt = new Date(post.publishedAt);
-  const formattedDate = Number.isNaN(publishedAt.getTime())
-    ? ""
-    : new Intl.DateTimeFormat(currentLanguage === "ja" ? "ja-JP" : "en-US", {
-        year: "numeric",
-        month: currentLanguage === "ja" ? "numeric" : "short",
-        day: "numeric",
-      }).format(publishedAt);
-
-  link.className = "blog-item";
-  link.href = post.url;
-  link.target = "_blank";
-  link.rel = "noopener noreferrer";
-
-  main.className = "blog-main";
-  title.className = "blog-title";
-  title.textContent = post.title;
-  meta.className = "blog-meta";
-  meta.textContent = formattedDate ? `${formattedDate} · sizu.me` : "sizu.me";
-
-  action.className = "blog-action";
-  arrow.textContent = "↗";
-  arrow.setAttribute("aria-hidden", "true");
-  destination.textContent = "Sizu.me";
-
-  main.append(title, meta);
-  action.append(arrow, destination);
-  link.append(main, action);
-
-  return link;
-}
-
-function setBlogStatus(message) {
-  const status = blogList?.querySelector("[data-blog-status]");
-  if (status) status.textContent = message;
-}
-
-async function loadBlogPosts() {
-  if (!blogList) return;
-
-  try {
-    const response = await fetch("/api/blog", {
-      headers: { Accept: "application/json" },
-    });
-
-    if (!response.ok) throw new Error(`Blog API returned ${response.status}`);
-
-    const data = await response.json();
-    if (!Array.isArray(data.posts) || data.posts.length === 0) {
-      setBlogStatus(blogList.dataset.emptyMessage ?? "No public posts yet.");
-      return;
-    }
-
-    const fragment = document.createDocumentFragment();
-    data.posts.forEach((post) => fragment.append(createBlogItem(post)));
-    blogList.replaceChildren(fragment);
-  } catch {
-    setBlogStatus(blogList.dataset.errorMessage ?? "Posts are temporarily unavailable.");
-  }
-}
-
-loadBlogPosts();
 
 function isMobileNavigation() {
   return window.matchMedia("(max-width: 760px)").matches;

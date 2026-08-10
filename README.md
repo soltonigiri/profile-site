@@ -5,7 +5,7 @@
 日本語・英語に対応した、Cloudflare Pages上のプロフィールサイトです。
 
 - Production: https://soltonigiri.pages.dev/
-- Runtime: static assets + Cloudflare Pages Functions
+- Runtime: static assets
 - Node.js: 22（GitHub Actionsと同じバージョン）
 
 ## セットアップと起動
@@ -15,7 +15,7 @@ npm ci
 npm run dev
 ```
 
-`http://localhost:8788`でローカルサイトが起動します。`npm run dev`は、`public/`を配信しつつ、ルートの`functions/`もPages Functionsとして読み込みます。
+`http://localhost:8788`でローカルサイトが起動します。`npm run dev`は`public/`を配信します。
 
 ## 構成
 
@@ -23,24 +23,20 @@ npm run dev
 public/
   index.html                 日本語版
   en/index.html              英語版
-  script.js                  メニュー、現在位置、Blog取得、おにぎりの動作
+  script.js                  メニュー、現在位置、おにぎりの動作
   style.css                  共通スタイル
   assets/immutable/          本番配信用のAVIF・WebP・SVG
-functions/api/blog.js        sizu.meのRSSを取得するPages Function
-tests/blog.test.js           Blogフィード処理のユニットテスト
 tests/site.spec.js           Playwright E2E・アクセシビリティテスト
 scripts/lighthouse.mjs       Lighthouse検査
 wrangler.jsonc               Cloudflare Pages設定
 ```
-
-Blogはブラウザから`/api/blog`を取得します。Pages Function側でRSSの取得先、応答サイズ、タイムアウト、5分間の内部キャッシュを管理しています。非公開化した記事が古いブラウザ・CDNキャッシュに残らないよう、API応答自体は保存させません。
 
 生成元の大容量PNGはローカルの`source-assets/`に保管し、GitとCloudflare Pagesの配信対象から除外しています。
 
 ## テスト
 
 ```bash
-# HTML、JavaScript、内部リンク、Blogユニットテスト
+# HTML、JavaScript、内部リンク
 npm run check
 
 # Wranglerのテストサーバーを自動起動してPlaywrightを実行

@@ -6,12 +6,11 @@
   "scripts": {
     "dev": "wrangler pages dev public --port 8788",
     "check:html": "html-validate public/index.html public/en/index.html public/404.html",
-    "check:js": "node --check public/script.js && node --check functions/api/blog.js",
+    "check:js": "node --check public/script.js",
     "check:links": "linkinator public/index.html --recurse --check-fragments --check-css --skip soltonigiri.pages.dev --skip github.com --skip x.com --skip sizu.me --skip signal.me",
-    "test:unit": "vitest run tests/blog.test.js",
     "test:e2e": "node scripts/run-e2e.mjs",
     "test:lighthouse": "node scripts/lighthouse.mjs",
-    "check": "npm run check:html && npm run check:js && npm run check:links && npm run test:unit"
+    "check": "npm run check:html && npm run check:js && npm run check:links"
   },
   "devDependencies": {
     "@axe-core/playwright": "4.12.1",
@@ -20,7 +19,6 @@
     "html-validate": "11.5.6",
     "lighthouse": "13.4.1",
     "linkinator": "7.6.1",
-    "vitest": "4.1.10",
     "wrangler": "4.112.0"
   }
 }

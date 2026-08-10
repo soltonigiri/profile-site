@@ -1,16 +1,6 @@
 import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
-const blogFixture = {
-  posts: [
-    {
-      title: "Test post",
-      url: "https://sizu.me/soltonigiri/posts/test-post",
-      publishedAt: "Tue, 21 Jul 2026 00:16:28 GMT",
-    },
-  ],
-};
-
 const importantExternalUrls = {
   youtubeMarkdownArchiver: "https://github.com/soltonigiri/youtube-markdown-archiver",
   scpMcp: "https://github.com/soltonigiri/scp-mcp",
@@ -20,23 +10,13 @@ const importantExternalUrls = {
     "https://signal.me/#eu/By3IL7zBc_iEv25MBYRox2iEW_J4Pwv_kuYpf072hE4p0yc0oPFA-asgKM3MJxtX",
 };
 
-async function mockBlogApi(page) {
-  await page.route("**/api/blog", (route) =>
-    route.fulfill({
-      status: 200,
-      contentType: "application/json",
-      body: JSON.stringify(blogFixture),
-    }),
-  );
-}
-
 for (const route of ["/", "/en/"]) {
-  test(`${route} is accessible and renders blog posts`, async ({ page }) => {
-    await mockBlogApi(page);
+  test(`${route} is accessible without an empty Blog section`, async ({ page }) => {
     await page.goto(route);
 
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.getByText("Test post")).toBeVisible();
+    await expect(page.locator("#blog")).toHaveCount(0);
+    await expect(page.locator('[data-nav] a[href="#blog"]')).toHaveCount(0);
 
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
@@ -44,7 +24,6 @@ for (const route of ["/", "/en/"]) {
 }
 
 test("English route has independent metadata", async ({ page }) => {
-  await mockBlogApi(page);
   await page.goto("/en/");
 
   await expect(page).toHaveTitle("soltonigiri | Software Engineer");
@@ -60,7 +39,6 @@ test("English route has independent metadata", async ({ page }) => {
 });
 
 test("language switcher is one full-size control and toggles both ways", async ({ page }) => {
-  await mockBlogApi(page);
   await page.goto("/");
 
   const englishSwitcher = page.getByRole("link", { name: "英語に切り替える" });
@@ -75,7 +53,6 @@ test("language switcher is one full-size control and toggles both ways", async (
 });
 
 test("all X links and structured data use the current account", async ({ page }) => {
-  await mockBlogApi(page);
   await page.goto("/");
 
   const xLinks = page.locator(`a[href="${importantExternalUrls.x}"]`);
@@ -86,7 +63,6 @@ test("all X links and structured data use the current account", async ({ page })
 
 test("both languages use the shared social icon sprite", async ({ page }) => {
   for (const route of ["/", "/en/"]) {
-    await mockBlogApi(page);
     await page.goto(route);
 
     await expect(
@@ -99,7 +75,6 @@ test("both languages use the shared social icon sprite", async ({ page }) => {
 
 test("Projects and Contact keep the important external URLs", async ({ page }) => {
   for (const route of ["/", "/en/"]) {
-    await mockBlogApi(page);
     await page.goto(route);
 
     const projects = page.locator("#projects");
@@ -125,7 +100,6 @@ test("Projects and Contact keep the important external URLs", async ({ page }) =
 });
 
 test("About copy lives in Profile and scroll navigation follows section order", async ({ page }) => {
-  await mockBlogApi(page);
   await page.goto("/");
 
   await expect(page.locator('[data-nav] a[href="#about"]')).toHaveCount(0);
@@ -138,7 +112,7 @@ test("About copy lives in Profile and scroll navigation follows section order", 
     "#contact",
   );
 
-  for (const sectionId of ["profile", "projects", "blog", "skills", "contact"]) {
+  for (const sectionId of ["profile", "projects", "skills", "contact"]) {
     await page.locator(`#${sectionId}`).evaluate((section) =>
       section.scrollIntoView({ behavior: "instant", block: "start" }),
     );
@@ -150,7 +124,6 @@ test("About copy lives in Profile and scroll navigation follows section order", 
 });
 
 test("profile character reacts to pointer and keyboard activation without reaction text", async ({ page }) => {
-  await mockBlogApi(page);
   await page.goto("/");
 
   const character = page.getByRole("button", { name: "おにぎりをつつく" });
@@ -162,7 +135,6 @@ test("profile character reacts to pointer and keyboard activation without reacti
 });
 
 test("selected client work shows delivery proof without publishing the contract price", async ({ page }) => {
-  await mockBlogApi(page);
   await page.goto("/");
 
   const clientWork = page.locator("[data-client-work]");
@@ -185,7 +157,6 @@ test("unknown routes return the custom 404 with a 404 status", async ({ page }) 
 
 test("mobile menu traps focus away from the page and closes with Escape", async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 });
-  await mockBlogApi(page);
   await page.goto("/");
 
   const menu = page.locator("[data-nav]");
@@ -212,7 +183,7 @@ test("mobile menu traps focus away from the page and closes with Escape", async 
   await expect(page.locator(".site-footer")).not.toHaveAttribute("inert", "");
 });
 
-test("static and API responses carry the expected security and cache headers", async ({ request }) => {
+test("static responses carry the expected security and cache headers", async ({ request }) => {
   const home = await request.get("/");
   expect(home.headers()["content-security-policy"]).toContain("default-src 'self'");
 
@@ -223,9 +194,4 @@ test("static and API responses carry the expected security and cache headers", a
     const response = await request.get(`/assets/profile-onigiri-${sourcePng}.png`);
     expect(response.status()).toBe(404);
   }
-
-  const blog = await request.get("/api/blog");
-  expect([200, 502]).toContain(blog.status());
-  expect(blog.headers()["content-security-policy"]).toBe("default-src 'none'; frame-ancestors 'none'");
-  expect(blog.headers()["x-robots-tag"]).toBe("noindex");
 });
