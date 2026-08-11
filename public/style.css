@@ -599,6 +599,12 @@ a.project-item:hover .project-title {
   margin: 0;
 }
 
+.footer-links {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
 .footer-inner a {
   transition: color 180ms ease;
 }

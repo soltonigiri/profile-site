@@ -120,6 +120,10 @@ test("Projects, Contact, and footer keep the important external URLs", async ({ 
       route === "/" ? "このサイトのしくみ" : "How this site works",
     );
     await expect(siteSource).toHaveAttribute("target", "_blank");
+    const footerLinks = page.locator(".site-footer .footer-links a");
+    await expect(footerLinks).toHaveCount(2);
+    await expect(footerLinks.nth(0)).toHaveAttribute("href", importantExternalUrls.profileSite);
+    await expect(footerLinks.nth(1)).toHaveAttribute("href", "#profile");
   }
 });
 
