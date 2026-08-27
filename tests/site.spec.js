@@ -2,6 +2,9 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 const importantExternalUrls = {
+  designs: "https://soltonigiri-designs.pages.dev/",
+  designsEn: "https://soltonigiri-designs.pages.dev/en/",
+  yomeiExe: "https://yomei-exe.pages.dev/",
   youtubeMarkdownArchiver: "https://github.com/soltonigiri/youtube-markdown-archiver",
   githubProfile: "https://github.com/soltonigiri",
   profileSite: "https://github.com/soltonigiri/profile-site",
@@ -17,6 +20,9 @@ for (const route of ["/", "/en/"]) {
     await expect(page.locator("h1")).toBeVisible();
     await expect(page.locator("#blog")).toHaveCount(0);
     await expect(page.locator('[data-nav] a[href="#blog"]')).toHaveCount(0);
+    await expect(page.locator("#skills")).toHaveCount(0);
+    await expect(page.locator('[data-nav] a[href="#skills"]')).toHaveCount(0);
+    await expect(page.getByText("16 y/o", { exact: true })).toHaveCount(0);
 
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
@@ -26,7 +32,7 @@ for (const route of ["/", "/en/"]) {
 test("English route has independent metadata", async ({ page }) => {
   await page.goto("/en/");
 
-  await expect(page).toHaveTitle("soltonigiri | Software Engineer");
+  await expect(page).toHaveTitle("soltonigiri");
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute(
     "href",
     "https://soltonigiri.pages.dev/en/",
@@ -84,18 +90,21 @@ test("Projects, Contact, and footer keep the important external URLs", async ({ 
     await expect(
       projects.locator(`a[href="${importantExternalUrls.youtubeMarkdownArchiver}"]`),
     ).toHaveCount(1);
-    await expect(projectItems).toHaveCount(3);
+    await expect(projects.locator(`a[href="${importantExternalUrls.yomeiExe}"]`)).toHaveCount(1);
+    await expect(projectItems).toHaveCount(4);
     await expect(projectItems.nth(0)).toHaveAttribute("data-client-work", "");
     await expect(projectItems.nth(0)).toContainText(
       route === "/"
-        ? "フォーム入力からPDF帳票・メール通知までを自動化"
-        : "Automated PDF documents and email notifications from form submissions",
+        ? "WordPressフォームのPDF出力とメール通知を自動化"
+        : "Automated PDF output and email notifications from form submissions",
     );
     await expect(projectItems.nth(1)).toHaveAttribute("data-oss-contributions", "");
     await expect(projectItems.nth(2)).toHaveAttribute(
       "href",
       importantExternalUrls.youtubeMarkdownArchiver,
     );
+    await expect(projectItems.nth(3)).toHaveAttribute("href", importantExternalUrls.yomeiExe);
+    await expect(projectItems.nth(3)).toContainText(route === "/" ? "余命.exe" : "Yomei.exe");
     const contributionsLink = projects.locator(`a[href="${importantExternalUrls.githubProfile}"]`);
     await expect(contributionsLink).toHaveCount(1);
     await expect(contributionsLink).toContainText(
@@ -121,9 +130,13 @@ test("Projects, Contact, and footer keep the important external URLs", async ({ 
     );
     await expect(siteSource).toHaveAttribute("target", "_blank");
     const footerLinks = page.locator(".site-footer .footer-links a");
-    await expect(footerLinks).toHaveCount(2);
-    await expect(footerLinks.nth(0)).toHaveAttribute("href", importantExternalUrls.profileSite);
-    await expect(footerLinks.nth(1)).toHaveAttribute("href", "#profile");
+    await expect(footerLinks).toHaveCount(3);
+    await expect(footerLinks.nth(0)).toHaveAttribute(
+      "href",
+      route === "/" ? importantExternalUrls.designs : importantExternalUrls.designsEn,
+    );
+    await expect(footerLinks.nth(1)).toHaveAttribute("href", importantExternalUrls.profileSite);
+    await expect(footerLinks.nth(2)).toHaveAttribute("href", "#profile");
   }
 });
 
@@ -133,14 +146,18 @@ test("About copy lives in Profile and scroll navigation follows section order", 
   await expect(page.locator('[data-nav] a[href="#about"]')).toHaveCount(0);
   await expect(page.locator("#about")).toHaveCount(0);
   await expect(page.locator("#profile .profile-about")).toContainText(
-    "AIと個人開発が好きなソフトウェアエンジニア。",
+    "TypeScriptとPythonを使い、OSSへのコントリビュートやWebアプリ・CLIの開発をしています。",
   );
   await expect(page.getByRole("link", { name: /仕事のご依頼を受付中/ })).toHaveAttribute(
     "href",
     "#contact",
   );
 
-  for (const sectionId of ["profile", "projects", "skills", "contact"]) {
+  await expect(page.locator("#contact .contact-description")).toContainText(
+    "開発のご依頼はXかSignalへ。",
+  );
+
+  for (const sectionId of ["profile", "projects", "contact"]) {
     await page.locator(`#${sectionId}`).evaluate((section) =>
       section.scrollIntoView({ behavior: "instant", block: "start" }),
     );
@@ -166,9 +183,9 @@ test("selected client work shows delivery proof without publishing the contract 
   await page.goto("/");
 
   const clientWork = page.locator("[data-client-work]");
-  await expect(clientWork).toContainText("フォーム入力からPDF帳票・メール通知までを自動化");
+  await expect(clientWork).toContainText("WordPressフォームのPDF出力とメール通知を自動化");
   await expect(clientWork).toContainText(
-    "WordPressでフォーム入力4項目をPDFに反映。実フォームでメールとPDFの動作を確認。",
+    "フォームの入力4項目をPDFへ反映。実際のフォームで、メール通知とPDF出力を確認。",
   );
   await expect(clientWork).toContainText("Paid client work · ★ 5.0 / 5");
   await expect(clientWork).not.toContainText("申込者へのPDF案内と管理者通知までを自動化");
@@ -184,10 +201,10 @@ test("selected client work shows delivery proof without publishing the contract 
   await page.goto("/en/");
   const englishClientWork = page.locator("[data-client-work]");
   await expect(englishClientWork).toContainText(
-    "Automated PDF documents and email notifications from form submissions",
+    "Automated PDF output and email notifications from form submissions",
   );
   await expect(englishClientWork).toContainText(
-    "Mapped four WordPress form fields into a PDF and verified email delivery and PDF output through the live form.",
+    "Four form fields mapped to a PDF. Email notifications and PDF output tested through the live form.",
   );
   await expect(englishClientWork).toContainText("Paid client work · ★ 5.0 / 5");
   await expect(englishClientWork).not.toContainText("applicant access by email");
