@@ -6,7 +6,7 @@
     <meta name="theme-color" content="#091117">
     <meta
       name="description"
-      content="soltonigiriのプロフィールと公開プロジェクトを紹介するポートフォリオサイト。"
+      content="OSSへの貢献、個人開発、仕事の実績をまとめたsoltonigiriのポートフォリオ。"
     >
     <link rel="canonical" href="https://soltonigiri.pages.dev/">
     <link rel="alternate" hreflang="ja" href="https://soltonigiri.pages.dev/">
@@ -17,7 +17,7 @@
     <meta property="og:title" content="soltonigiri">
     <meta
       property="og:description"
-      content="soltonigiriのプロフィールと公開プロジェクトを紹介するポートフォリオサイト。"
+      content="OSSへの貢献、個人開発、仕事の実績をまとめたsoltonigiriのポートフォリオ。"
     >
     <meta property="og:url" content="https://soltonigiri.pages.dev/">
     <meta property="og:image" content="https://soltonigiri.pages.dev/assets/og-image.png">
@@ -30,10 +30,10 @@
     <meta name="twitter:title" content="soltonigiri">
     <meta
       name="twitter:description"
-      content="soltonigiriのプロフィールと公開プロジェクトを紹介するポートフォリオサイト。"
+      content="OSSへの貢献、個人開発、仕事の実績をまとめたsoltonigiriのポートフォリオ。"
     >
     <meta name="twitter:image" content="https://soltonigiri.pages.dev/assets/og-image.png">
-    <title>soltonigiri｜Software Engineer</title>
+    <title>soltonigiri</title>
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfilePage","url":"https://soltonigiri.pages.dev/","mainEntity":{"@type":"Person","name":"soltonigiri","alternateName":"しおむすび","url":"https://soltonigiri.pages.dev/","sameAs":["https://github.com/soltonigiri","https://x.com/solt_onigiri_","https://sizu.me/soltonigiri"]}}</script>
     <link rel="icon" type="image/png" href="./assets/favicon.png">
     <link rel="apple-touch-icon" href="./assets/favicon.png">
@@ -60,7 +60,6 @@
           >
             <a href="#profile" aria-current="page">Profile</a>
             <a href="#projects">Projects</a>
-            <a href="#skills">Skills</a>
             <a href="#contact">Contact</a>
           </nav>
 
@@ -120,7 +119,6 @@
           </button>
           <h1>しおむすび@soltonigiri</h1>
           <ul class="profile-meta" aria-label="プロフィール情報">
-            <li>16 y/o</li>
             <li>Tokyo, Japan</li>
           </ul>
           <div
@@ -136,8 +134,7 @@
             </a>
           </div>
           <p class="profile-about">
-            AIと個人開発が好きなソフトウェアエンジニア。個人で開発の仕事を請け負い、<br>
-            AIエージェントやローカルLLMにも取り組んでいます。
+            TypeScriptとPythonを使い、OSSへのコントリビュートやWebアプリ・CLIの開発をしています。
           </p>
           <a class="availability-link" href="#contact">
             <span class="availability-dot" aria-hidden="true"></span>
@@ -159,9 +156,9 @@
             <article class="project-item project-item-static" data-client-work>
               <span class="project-index">01</span>
               <div class="project-main">
-                <span class="project-title">フォーム入力からPDF帳票・メール通知までを自動化</span>
+                <span class="project-title">WordPressフォームのPDF出力とメール通知を自動化</span>
                 <span class="project-description">
-                  WordPressでフォーム入力4項目をPDFに反映。実フォームでメールとPDFの動作を確認。
+                  フォームの入力4項目をPDFへ反映。実際のフォームで、メール通知とPDF出力を確認。
                 </span>
                 <span class="project-tech">WordPress · Fluent Forms · Fluent PDF Generator</span>
                 <span class="project-proof">
@@ -181,7 +178,7 @@
               <span class="project-main">
                 <span class="project-title">外部OSSへの貢献</span>
                 <span class="project-description">
-                  activistとmcp-migrateへの修正がマージ済み。Jest、LangChain.js、OpenClawへの修正はレビュー待ち。
+                  Jestへの修正4件と、pnpm、activist、mcp-migrateへの修正がマージ済み。JestではPRレビューと不具合調査も。
                 </span>
               </span>
               <span class="project-action">
@@ -199,7 +196,7 @@
               <span class="project-main">
                 <span class="project-title">youtube-markdown-archiver</span>
                 <span class="project-description">
-                  YouTubeのメタデータ、字幕、ASR、OCRを統合し、検索可能なMarkdownアーカイブとして保存するローカルCLI。
+                  動画の情報、字幕、音声認識、画像内の文字をMarkdownで保存するローカルCLI。
                 </span>
                 <span class="project-tech">Python · SQLite · ASR · OCR</span>
               </span>
@@ -207,25 +204,25 @@
                 <span class="project-destination">GitHub</span>
               </span>
             </a>
-          </div>
-        </div>
-      </section>
 
-      <section class="section section-skills" id="skills" data-section>
-        <div class="container">
-          <div class="section-heading">
-            <h2>Skills</h2>
-          </div>
-
-          <div class="skill-groups">
-            <div class="skill-group">
-              <h3>Languages</h3>
-              <ul>
-                <li>Python</li>
-                <li>TypeScript</li>
-                <li>JavaScript</li>
-              </ul>
-            </div>
+            <a
+              class="project-item"
+              href="https://yomei-exe.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="project-index">04</span>
+              <span class="project-main">
+                <span class="project-title">余命.exe</span>
+                <span class="project-description">
+                  日本の公的統計から、統計上の残り時間と自由時間を計算。入力内容は端末内だけで処理。
+                </span>
+                <span class="project-tech">TypeScript · 公的統計 · Playwright</span>
+              </span>
+              <span class="project-action">
+                <span class="project-destination">Live</span>
+              </span>
+            </a>
           </div>
         </div>
       </section>
@@ -233,6 +230,9 @@
       <section class="section section-contact" id="contact" data-section>
         <div class="container contact-inner">
           <h2>Contact</h2>
+          <p class="contact-description">
+            開発のご依頼はXかSignalへ。
+          </p>
           <div class="contact-links">
             <a
               class="icon-only-link"
@@ -264,6 +264,7 @@
       <div class="container footer-inner">
         <p>© <span data-year>2026</span> soltonigiri</p>
         <div class="footer-links">
+          <a href="https://soltonigiri-designs.pages.dev/">← デザイン一覧</a>
           <a
             href="https://github.com/soltonigiri/profile-site"
             target="_blank"

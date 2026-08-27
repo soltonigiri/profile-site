@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#091117">
-    <meta name="description" content="The portfolio of soltonigiri, a software engineer based in Tokyo.">
+    <meta name="description" content="soltonigiri's open-source, personal, and client work.">
     <link rel="canonical" href="https://soltonigiri.pages.dev/en/">
     <link rel="alternate" hreflang="ja" href="https://soltonigiri.pages.dev/">
     <link rel="alternate" hreflang="en" href="https://soltonigiri.pages.dev/en/">
@@ -12,7 +12,7 @@
     <meta property="og:type" content="website">
     <meta property="og:site_name" content="soltonigiri">
     <meta property="og:title" content="soltonigiri">
-    <meta property="og:description" content="The portfolio of soltonigiri, a software engineer based in Tokyo.">
+    <meta property="og:description" content="soltonigiri's open-source, personal, and client work.">
     <meta property="og:url" content="https://soltonigiri.pages.dev/en/">
     <meta property="og:image" content="https://soltonigiri.pages.dev/assets/og-image.png">
     <meta property="og:image:width" content="1200">
@@ -22,9 +22,9 @@
     <meta property="og:locale:alternate" content="ja_JP">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="soltonigiri">
-    <meta name="twitter:description" content="The portfolio of soltonigiri, a software engineer based in Tokyo.">
+    <meta name="twitter:description" content="soltonigiri's open-source, personal, and client work.">
     <meta name="twitter:image" content="https://soltonigiri.pages.dev/assets/og-image.png">
-    <title>soltonigiri | Software Engineer</title>
+    <title>soltonigiri</title>
     <script type="application/ld+json">{"@context":"https://schema.org","@type":"ProfilePage","url":"https://soltonigiri.pages.dev/en/","mainEntity":{"@type":"Person","name":"soltonigiri","alternateName":"しおむすび","url":"https://soltonigiri.pages.dev/","sameAs":["https://github.com/soltonigiri","https://x.com/solt_onigiri_","https://sizu.me/soltonigiri"]}}</script>
     <link rel="icon" type="image/png" href="/assets/favicon.png">
     <link rel="apple-touch-icon" href="/assets/favicon.png">
@@ -42,7 +42,6 @@
           <nav class="site-nav" id="site-navigation" aria-label="Main navigation" data-nav>
             <a href="#profile" aria-current="page">Profile</a>
             <a href="#projects">Projects</a>
-            <a href="#skills">Skills</a>
             <a href="#contact">Contact</a>
           </nav>
 
@@ -102,7 +101,6 @@
           </button>
           <h1>Shiomusubi @soltonigiri</h1>
           <ul class="profile-meta" aria-label="Profile details">
-            <li>16 y/o</li>
             <li>Tokyo, Japan</li>
           </ul>
           <div class="profile-links" role="group" aria-label="External links">
@@ -114,8 +112,7 @@
             </a>
           </div>
           <p class="profile-about">
-            A software engineer who enjoys AI and indie development. I work independently on<br>
-            software projects while exploring AI agents and local LLMs.
+            Open-source bug fixes, web apps, and CLI tools in TypeScript and Python.
           </p>
           <a class="availability-link" href="#contact">
             <span class="availability-dot" aria-hidden="true"></span>
@@ -137,9 +134,9 @@
             <article class="project-item project-item-static" data-client-work>
               <span class="project-index">01</span>
               <div class="project-main">
-                <span class="project-title">Automated PDF documents and email notifications from form submissions</span>
+                <span class="project-title">Automated PDF output and email notifications from form submissions</span>
                 <span class="project-description">
-                  Mapped four WordPress form fields into a PDF and verified email delivery and PDF output through the live form.
+                  Four form fields mapped to a PDF. Email notifications and PDF output tested through the live form.
                 </span>
                 <span class="project-tech">WordPress · Fluent Forms · Fluent PDF Generator</span>
                 <span class="project-proof">
@@ -159,7 +156,7 @@
               <span class="project-main">
                 <span class="project-title">Open-source contributions</span>
                 <span class="project-description">
-                  Fixes merged in activist and mcp-migrate. Fixes for Jest, LangChain.js, and OpenClaw are under review.
+                  Four fixes merged into Jest, plus fixes in pnpm, activist, and mcp-migrate. Also reviewing pull requests and investigating Jest bugs.
                 </span>
               </span>
               <span class="project-action">
@@ -185,24 +182,25 @@
                 <span class="project-destination">GitHub</span>
               </span>
             </a>
-          </div>
-        </div>
-      </section>
 
-      <section class="section section-skills" id="skills" data-section>
-        <div class="container">
-          <div class="section-heading">
-            <h2>Skills</h2>
-          </div>
-          <div class="skill-groups">
-            <div class="skill-group">
-              <h3>Languages</h3>
-              <ul>
-                <li>Python</li>
-                <li>TypeScript</li>
-                <li>JavaScript</li>
-              </ul>
-            </div>
+            <a
+              class="project-item"
+              href="https://yomei-exe.pages.dev/"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <span class="project-index">04</span>
+              <span class="project-main">
+                <span class="project-title">Yomei.exe</span>
+                <span class="project-description">
+                  Estimates statistical remaining lifetime and free time from Japanese public data. Inputs stay on the device.
+                </span>
+                <span class="project-tech">TypeScript · Public data · Playwright</span>
+              </span>
+              <span class="project-action">
+                <span class="project-destination">Live</span>
+              </span>
+            </a>
           </div>
         </div>
       </section>
@@ -210,6 +208,9 @@
       <section class="section section-contact" id="contact" data-section>
         <div class="container contact-inner">
           <h2>Contact</h2>
+          <p class="contact-description">
+            For development work, message me on X or Signal.
+          </p>
           <div class="contact-links">
             <a
               class="icon-only-link"
@@ -241,6 +242,7 @@
       <div class="container footer-inner">
         <p>© <span data-year>2026</span> soltonigiri</p>
         <div class="footer-links">
+          <a href="https://soltonigiri-designs.pages.dev/en/">← Designs</a>
           <a
             href="https://github.com/soltonigiri/profile-site"
             target="_blank"

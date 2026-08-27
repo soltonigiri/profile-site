@@ -7,7 +7,6 @@
   --line: rgba(174, 199, 211, 0.18);
   --profile: #091117;
   --projects: #0d151c;
-  --skills: #17232c;
   --contact: #0a1218;
   --header: rgba(9, 17, 23, 0.86);
   --max-width: 1120px;
@@ -310,12 +309,6 @@ img {
   list-style: none;
 }
 
-.profile-meta li + li::before {
-  margin-inline: 11px;
-  color: var(--accent);
-  content: "·";
-}
-
 .profile-links,
 .contact-links {
   display: flex;
@@ -403,16 +396,8 @@ img {
   background: var(--projects);
 }
 
-.section-skills {
-  background: var(--skills);
-}
-
 .section-contact {
   background: var(--contact);
-}
-
-.section-skills,
-.section-contact {
   padding-block: clamp(68px, 7vw, 96px);
 }
 
@@ -531,50 +516,19 @@ a.project-item:hover .project-title {
   white-space: nowrap;
 }
 
-.skill-groups {
-  margin-top: clamp(42px, 5vw, 60px);
-  border-top: 1px solid var(--line);
-}
-
-.skill-group {
-  padding-top: 30px;
-}
-
-.skill-group h3 {
-  margin: 0 0 24px;
-  color: var(--accent);
-  font-size: 0.8rem;
-  font-weight: 700;
-  letter-spacing: 0.11em;
-  text-transform: uppercase;
-}
-
-.skill-group ul {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0;
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.skill-group li {
-  color: var(--ink);
-  font-size: 1rem;
-}
-
-.skill-group li:not(:last-child)::after {
-  margin-inline: 11px;
-  color: var(--faint);
-  content: "/";
-}
-
 .contact-inner {
   text-align: left;
 }
 
 .section-contact h2::after {
   margin-inline: 0;
+}
+
+.contact-description {
+  max-width: 780px;
+  margin: 34px 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
 }
 
 .contact-links {
@@ -764,7 +718,6 @@ a.project-item:hover .project-title {
     padding-block: 88px;
   }
 
-  .section-skills,
   .section-contact {
     padding-block: 68px;
   }
