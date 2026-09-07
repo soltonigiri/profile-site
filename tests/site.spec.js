@@ -4,7 +4,10 @@ import { expect, test } from "@playwright/test";
 const importantExternalUrls = {
   yomeiExe: "https://yomei-exe.pages.dev/",
   youtubeMarkdownArchiver: "https://github.com/soltonigiri/youtube-markdown-archiver",
-  githubProfile: "https://github.com/soltonigiri",
+  contributions: {
+    "/": "https://github.com/soltonigiri/soltonigiri/blob/main/pages/contributions_ja.md",
+    "/en/": "https://github.com/soltonigiri/soltonigiri/blob/main/pages/contributions.md",
+  },
   profileSite: "https://github.com/soltonigiri/profile-site",
   x: "https://x.com/solt_onigiri_",
 };
@@ -84,7 +87,10 @@ test("work, projects, and Contact point to their intended destinations", async (
     await expect(projects.locator(".project-item")).toHaveCount(2);
     await expect(projects.locator(`a[href="${importantExternalUrls.youtubeMarkdownArchiver}"]`)).toBeVisible();
     await expect(projects.locator(`a[href="${importantExternalUrls.yomeiExe}"]`)).toBeVisible();
-    await expect(page.locator("[data-oss-contributions]")).toHaveAttribute("href", importantExternalUrls.githubProfile);
+    await expect(page.locator("[data-oss-contributions]")).toHaveAttribute(
+      "href",
+      importantExternalUrls.contributions[route],
+    );
     await expect(page.locator("[data-client-work]")).toContainText("WordPress");
     await expect(page.locator("[data-client-work]")).toContainText("PDF");
     await expect(page.locator("[data-client-work] a")).toHaveCount(0);
