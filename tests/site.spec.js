@@ -210,12 +210,18 @@ for (const route of ["/", "/en/", "/not-found"]) {
 }
 
 for (const width of [1920, 2487]) {
-  test(`the portfolio uses the available space at ${width}px`, async ({ page }) => {
+  test(`the portfolio stays compact and centered at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1305 });
     for (const route of ["/", "/en/"]) {
       await page.goto(route);
       const bounds = await page.locator(".page").boundingBox();
-      expect(bounds.width / width).toBeGreaterThan(0.7);
+      expect(bounds.width / width).toBeGreaterThan(0.55);
+      expect(bounds.width / width).toBeLessThan(0.75);
+      const columns = page.locator(".content-column");
+      const left = await columns.nth(0).boundingBox();
+      const right = await columns.nth(1).boundingBox();
+      expect(left.width).toBeGreaterThan(right.width);
+      expect(left.x + left.width).toBeLessThan(right.x);
       expect(bounds.x).toBeGreaterThan(0);
       expect(bounds.x + bounds.width).toBeLessThan(width);
       expect(Math.abs(bounds.x - (width - bounds.x - bounds.width))).toBeLessThan(1);

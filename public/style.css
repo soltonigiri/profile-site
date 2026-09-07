@@ -78,7 +78,7 @@ img {
 }
 
 .page {
-  width: min(88%, 76rem);
+  width: min(88%, 60rem);
   margin-inline: auto;
   padding-block: clamp(16px, 3vh, 40px);
 }
@@ -179,7 +179,7 @@ h1 {
 
 .content-columns {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   align-items: start;
   gap: 4.5rem;
   padding-top: 2.25rem;
