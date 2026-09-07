@@ -7,7 +7,6 @@ const importantExternalUrls = {
   githubProfile: "https://github.com/soltonigiri",
   profileSite: "https://github.com/soltonigiri/profile-site",
   x: "https://x.com/solt_onigiri_",
-  directMessage: "https://x.com/messages/compose?recipient_id=1839890345158639616",
 };
 
 for (const route of ["/", "/en/"]) {
@@ -39,7 +38,7 @@ test("English route has independent metadata", async ({ page }) => {
   expect(JSON.parse(structuredData).url).toBe("https://soltonigiri.pages.dev/en/");
   await expect(page.getByRole("link", { name: /Contact Me/ })).toHaveAttribute(
     "href",
-    importantExternalUrls.directMessage,
+    importantExternalUrls.x,
   );
 });
 
@@ -61,7 +60,7 @@ test("all X links and structured data use the current account", async ({ page })
   await page.goto("/");
 
   const xLinks = page.locator(`a[href="${importantExternalUrls.x}"]`);
-  await expect(xLinks).toHaveCount(1);
+  await expect(xLinks).toHaveCount(2);
   const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
   expect(structuredData).toContain("https://x.com/solt_onigiri_");
 });
@@ -90,7 +89,7 @@ test("work, projects, and Contact point to their intended destinations", async (
     await expect(page.locator("[data-client-work]")).toContainText("PDF");
     await expect(page.locator("[data-client-work] a")).toHaveCount(0);
     const contact = page.getByRole("link", { name: /Contact Me/ });
-    await expect(contact).toHaveAttribute("href", importantExternalUrls.directMessage);
+    await expect(contact).toHaveAttribute("href", importantExternalUrls.x);
     await expect(contact).toHaveAttribute("target", "_blank");
     const siteSource = page.locator(".site-footer a");
     await expect(siteSource).toHaveCount(1);
@@ -98,18 +97,18 @@ test("work, projects, and Contact point to their intended destinations", async (
   }
 });
 
-test("Contact opens the owner's DM composer directly in both languages", async ({ page, context }) => {
+test("Contact opens the owner's X profile in both languages", async ({ page, context }) => {
   // Capture the destination locally; this test must not contact X or send a message.
   await context.route("https://x.com/**", (route) => route.fulfill({
     contentType: "text/html",
-    body: "<title>DM destination</title>",
+    body: "<title>X profile destination</title>",
   }));
   for (const route of ["/", "/en/"]) {
     await page.goto(route);
     const popupPromise = page.waitForEvent("popup");
     await page.getByRole("link", { name: /Contact Me/ }).click();
     const popup = await popupPromise;
-    await expect(popup).toHaveURL(importantExternalUrls.directMessage);
+    await expect(popup).toHaveURL(importantExternalUrls.x);
     await popup.close();
   }
 });
