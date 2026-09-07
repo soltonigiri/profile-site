@@ -23,15 +23,13 @@ npm run dev
 public/
   index.html                 日本語版
   en/index.html              英語版
-  script.js                  メニュー、現在位置、おにぎりの動作
+  script.js                  おにぎりの動作、年表示
   style.css                  共通スタイル
   assets/immutable/          本番配信用のAVIF・WebP・SVG
 tests/site.spec.js           Playwright E2E・アクセシビリティテスト
 scripts/lighthouse.mjs       Lighthouse検査
 wrangler.jsonc               Cloudflare Pages設定
 ```
-
-生成元の大容量PNGはローカルの`source-assets/`に保管し、GitとCloudflare Pagesの配信対象から除外しています。
 
 ## テスト
 

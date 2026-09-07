@@ -10,8 +10,8 @@
     "dev": "wrangler pages dev public --port 8788",
     "check:html": "html-validate public/index.html public/en/index.html public/404.html",
     "check:js": "node --check public/script.js",
-    "check:links": "linkinator public/index.html --recurse --check-fragments --check-css --skip soltonigiri.pages.dev --skip github.com --skip x.com --skip sizu.me --skip signal.me",
-    "test:e2e": "node scripts/run-e2e.mjs",
+    "check:links": "linkinator public/index.html --recurse --check-fragments --check-css --skip soltonigiri.pages.dev --skip github.com --skip x.com --skip sizu.me",
+    "test:e2e": "playwright test",
     "test:lighthouse": "node scripts/lighthouse.mjs",
     "check": "npm run check:html && npm run check:js && npm run check:links"
   },
