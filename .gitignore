@@ -11,4 +11,4 @@ source-assets/
 !.env.example
 
 .DS_Store
-/ChatGPT Image *.png
+/*.png
