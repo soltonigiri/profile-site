@@ -39,7 +39,7 @@ test("English route has independent metadata", async ({ page }) => {
   await expect(page.locator("html")).toHaveAttribute("lang", "en");
   const structuredData = await page.locator('script[type="application/ld+json"]').textContent();
   expect(JSON.parse(structuredData).url).toBe("https://soltonigiri.pages.dev/en/");
-  await expect(page.getByRole("link", { name: /Contact Me/ })).toHaveAttribute(
+  await expect(page.getByRole("link", { name: /Contact on X/ })).toHaveAttribute(
     "href",
     importantExternalUrls.x,
   );
@@ -94,7 +94,7 @@ test("work, projects, and Contact point to their intended destinations", async (
     await expect(page.locator("[data-client-work]")).toContainText("WordPress");
     await expect(page.locator("[data-client-work]")).toContainText("PDF");
     await expect(page.locator("[data-client-work] a")).toHaveCount(0);
-    const contact = page.getByRole("link", { name: /Contact Me/ });
+    const contact = page.getByRole("link", { name: /Contact on X/ });
     await expect(contact).toHaveAttribute("href", importantExternalUrls.x);
     await expect(contact).toHaveAttribute("target", "_blank");
     const siteSource = page.locator(".site-footer a");
@@ -112,7 +112,7 @@ test("Contact opens the owner's X profile in both languages", async ({ page, con
   for (const route of ["/", "/en/"]) {
     await page.goto(route);
     const popupPromise = page.waitForEvent("popup");
-    await page.getByRole("link", { name: /Contact Me/ }).click();
+    await page.getByRole("link", { name: /Contact on X/ }).click();
     const popup = await popupPromise;
     await expect(popup).toHaveURL(importantExternalUrls.x);
     await popup.close();
@@ -142,7 +142,7 @@ for (const width of [320, 390, 768]) {
     for (const route of ["/", "/en/"]) {
       await page.goto(route);
       await expect(page.locator("[data-nav], [data-menu-button]")).toHaveCount(0);
-      const contact = page.getByRole("link", { name: /Contact Me/ });
+      const contact = page.getByRole("link", { name: /Contact on X/ });
       await contact.scrollIntoViewIfNeeded();
       await expect(contact).toBeInViewport();
       expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
@@ -173,9 +173,9 @@ test("keyboard navigation reaches content and Contact; reduced motion suppresses
   expect(await character.locator("img").evaluate((img) => getComputedStyle(img).animationName)).toBe("none");
   for (let i = 0; i < 8; i++) {
     await page.keyboard.press("Tab");
-    if (await page.getByRole("link", { name: /Contact Me/ }).evaluate((link) => link === document.activeElement)) break;
+    if (await page.getByRole("link", { name: /Contact on X/ }).evaluate((link) => link === document.activeElement)) break;
   }
-  await expect(page.getByRole("link", { name: /Contact Me/ })).toBeFocused();
+  await expect(page.getByRole("link", { name: /Contact on X/ })).toBeFocused();
 });
 
 test("static responses carry the expected security and cache headers", async ({ request }) => {
@@ -327,4 +327,62 @@ test("character checks hourly, pauses while hidden, and refreshes on return", as
     document.dispatchEvent(new Event("visibilitychange"));
   });
   await expect(page.locator("[data-profile-image]")).toHaveAttribute("alt", "A sleeping onigiri");
+});
+
+for (const width of [320, 390, 701, 768, 1280, 2560]) {
+  test(`link endings and profile alignment hold at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 1200 });
+    for (const route of ["/", "/en/"]) {
+      await page.goto(route);
+      const layout = await page.evaluate(() => {
+        const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
+        const endings = [...document.querySelectorAll(".link-ending")].map((ending) => {
+          const range = document.createRange();
+          range.selectNodeContents(ending.firstChild);
+          const word = range.getBoundingClientRect();
+          const arrow = ending.querySelector("svg").getBoundingClientRect();
+          const heading = ending.closest("h3").getBoundingClientRect();
+          return { sameLine: arrow.top < word.bottom && arrow.bottom > word.top, right: arrow.right, limit: heading.right };
+        });
+        return {
+          endings,
+          alignment: Math.abs(rect("h1").left - rect(".social-icon").left),
+          contactGap: rect(".contact-button").top - rect(".contact p").bottom,
+          headingAlignment: Math.abs(rect(".work h2").top - rect(".contact h2").top),
+          fontSize: parseFloat(getComputedStyle(document.documentElement).fontSize),
+          scrollWidth: document.documentElement.scrollWidth,
+        };
+      });
+      expect(layout.alignment).toBeLessThan(1);
+      expect(layout.scrollWidth).toBe(width);
+      expect(Math.abs(layout.contactGap - layout.fontSize)).toBeLessThan(1);
+      if (width > 700) expect(layout.headingAlignment).toBeLessThan(1);
+      for (const ending of layout.endings) {
+        expect(ending.sameLine).toBe(true);
+        expect(ending.right).toBeLessThanOrEqual(ending.limit + 1);
+      }
+    }
+  });
+}
+
+test("touch activation brightens project and work titles without moving them", async ({ browser }) => {
+  const context = await browser.newContext({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
+  const page = await context.newPage();
+  await page.goto("http://127.0.0.1:8790/en/");
+  // Observe the tap feedback locally without opening an external destination.
+  await page.evaluate(() => document.addEventListener("click", (event) => event.preventDefault()));
+  const session = await context.newCDPSession(page);
+  for (const selector of ["a.project-item", "a.work-item"]) {
+    const link = page.locator(selector).first();
+    await link.scrollIntoViewIfNeeded();
+    const before = await link.boundingBox();
+    const title = link.locator("h3");
+    const color = await title.evaluate((node) => getComputedStyle(node).color);
+    await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: before.x + 10, y: before.y + 10 }] });
+    await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
+    expect(await title.evaluate((node) => getComputedStyle(node).color)).not.toBe(color);
+    expect(await link.boundingBox()).toEqual(before);
+    await expect.poll(() => title.evaluate((node) => getComputedStyle(node).color)).toBe(color);
+  }
+  await context.close();
 });
