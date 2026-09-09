@@ -5,7 +5,7 @@
   color-scheme: dark;
   --paper: #181A1B;
   --ink: #E6EDF3;
-  --muted: var(--ink);
+  --muted: #B8C2CC;
   --line: #30363D;
   --accent: #78A6D8;
   --button-border: var(--accent);
@@ -158,8 +158,8 @@ h1 {
 
 .profile-links {
   display: flex;
-  gap: 4px;
-  margin: 4px 0 -8px -10px;
+  gap: 0.25rem;
+  margin: 0.25rem 0 -0.5rem -0.625rem;
 }
 
 .profile-links a {
@@ -181,7 +181,7 @@ h1 {
   display: grid;
   grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
   align-items: start;
-  gap: 4.5rem;
+  column-gap: clamp(2rem, calc(10vw - 2.5rem), 4.5rem);
   padding-top: 2.25rem;
 }
 
@@ -239,6 +239,7 @@ h2 {
 }
 
 .fact-icon {
+  color: var(--muted);
   width: 1.3125rem;
   height: 1.3125rem;
   flex: 0 0 auto;
@@ -279,11 +280,24 @@ a.project-item h3 {
   color: var(--accent);
 }
 
+.link-ending {
+  white-space: nowrap;
+}
+
+.link-ending .external-arrow {
+  margin-left: 0.1875rem;
+}
+
 .external-arrow {
   display: inline-block;
-  margin-left: 0.1875rem;
-  font-size: 1rem;
-  font-weight: 400;
+  width: 1em;
+  height: 1em;
+  vertical-align: -0.125em;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.5;
+  stroke-linecap: round;
+  stroke-linejoin: round;
   transform: translate(var(--arrow-x, 0px), var(--arrow-y, 0px));
   transition: transform var(--motion-duration) var(--motion-ease);
 }
@@ -296,12 +310,6 @@ a.project-item h3 {
 
 .contact p {
   margin: 0 0 1rem;
-}
-
-@media (min-width: 701px) {
-  .contact-button {
-    margin-top: auto;
-  }
 }
 
 .contact-button {
@@ -513,6 +521,10 @@ a.project-item h3 {
 .profile-links a:active {
   --icon-lift: 0px;
   --icon-scale: 0.94;
+}
+
+:is(a.work-item, a.project-item):active h3 {
+  color: #A2C7ED;
 }
 
 .contact-button:active {
