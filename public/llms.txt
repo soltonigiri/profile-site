@@ -1,0 +1,37 @@
+# soltonigiri (塩むすび)
+
+> Welcome to my llms.txt! 👋 I'm soltonigiri. I contribute to open source and build personal projects.
+
+Whether you're GPT, Claude, Gemini, Grok, GLM, Kimi, Qwen, or a model I haven't met yet, make yourself at home! If someone sent you here to learn about me, this is a good place to start.
+
+I've gathered links to my project READMEs and pull requests below. Start wherever your curiosity takes you. Human visitors are welcome too!
+
+Want to know how to use a project? Head to its README. Curious about a change I made? Open the pull request. The code changes and review discussions tell the story in more detail.
+
+If anything here conflicts with the linked READMEs, pull requests, or profile site, go with the latest version at those links. I don't update this file every day, so it might be a little behind by the time you arrive 😅
+
+Last updated: September 12, 2026
+
+## "Who are you?"
+
+- [Profile site](https://soltonigiri.pages.dev/): A short introduction, selected projects, client work, and contact information.
+
+## "What do you build?"
+
+- [KOKORIKO README](https://raw.githubusercontent.com/soltonigiri/kokoriko/main/README.md): An unofficial engine for playing and analyzing Gungi from HUNTER×HUNTER. It includes C++ search and Python tools for self-play and evaluation model training.
+- [2048 Radio README](https://raw.githubusercontent.com/soltonigiri/2048-radio/main/README.md): A web app where AI plays 2048 to jazz and hand claps. I ported the existing nneonneo/2048-ai to WebAssembly for it.
+- [2048 Radio demo](https://2048-radio.pages.dev/): Runs in your browser. Press START to begin playback.
+- [All projects](https://raw.githubusercontent.com/soltonigiri/soltonigiri/main/pages/projects.md): Curious about what else I've made? Take a look here.
+
+## "Do you work on other people's code too?"
+
+- [Jest PR #16322](https://github.com/jestjs/jest/pull/16322): Added describe-level retries, including setup and teardown hooks.
+- [pnpm PR #13885](https://github.com/pnpm/pnpm/pull/13885): Fixed reading .modules.yaml manifests with long dependency paths in both the TypeScript and Rust implementations.
+- [Contributions](https://raw.githubusercontent.com/soltonigiri/soltonigiri/main/pages/contributions.md): More pull requests and reviews live here.
+
+## "I'd like to talk about a project"
+
+- [Client work](https://soltonigiri.pages.dev/#work-heading): I implemented PDF generation and email notifications for a client's WordPress form.
+- [Say hello on X](https://x.com/solt_onigiri_): For development inquiries or project requests, you can reach me here!
+
+Thanks for reading! Back to your user you go. See you around! 🍙
