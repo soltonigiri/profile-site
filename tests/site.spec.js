@@ -2,8 +2,13 @@ import AxeBuilder from "@axe-core/playwright";
 import { expect, test } from "@playwright/test";
 
 const importantExternalUrls = {
-  yomeiExe: "https://yomei-exe.pages.dev/",
-  youtubeMarkdownArchiver: "https://github.com/soltonigiri/youtube-markdown-archiver",
+  kokoriko: "https://github.com/soltonigiri/kokoriko",
+  radioDemo: "https://2048-radio.pages.dev/",
+  radioSource: "https://github.com/soltonigiri/2048-radio",
+  projects: {
+    "/": "https://github.com/soltonigiri/soltonigiri/blob/main/pages/projects_ja.md",
+    "/en/": "https://github.com/soltonigiri/soltonigiri/blob/main/pages/projects.md",
+  },
   contributions: {
     "/": "https://github.com/soltonigiri/soltonigiri/blob/main/pages/contributions_ja.md",
     "/en/": "https://github.com/soltonigiri/soltonigiri/blob/main/pages/contributions.md",
@@ -85,12 +90,29 @@ test("work, projects, and Contact point to their intended destinations", async (
     await page.goto(route);
     const projects = page.locator("#projects");
     await expect(projects.locator(".project-item")).toHaveCount(2);
-    await expect(projects.locator(`a[href="${importantExternalUrls.youtubeMarkdownArchiver}"]`)).toBeVisible();
-    await expect(projects.locator(`a[href="${importantExternalUrls.yomeiExe}"]`)).toBeVisible();
+    await expect(projects.locator(`a[href="${importantExternalUrls.kokoriko}"]`)).toBeVisible();
+    await expect(projects.locator(`a[href="${importantExternalUrls.radioDemo}"]`)).toBeVisible();
     await expect(page.locator("[data-oss-contributions]")).toHaveAttribute(
       "href",
       importantExternalUrls.contributions[route],
     );
+    await expect(projects.locator(`a[href="${importantExternalUrls.radioSource}"]`)).toBeVisible();
+    await expect(page.locator("[data-all-projects]")).toHaveAttribute("href", importantExternalUrls.projects[route]);
+    await expect(page.locator(".work-list > .work-item")).toHaveCount(2);
+    await expect(page.locator(".contributions a")).toHaveCount(1);
+    await expect(page.locator(".contributions p")).toContainText("Jest");
+    await expect(page.locator(".contributions p")).toContainText("pnpm");
+    await expect(projects.getByRole("link", { name: "KOKORIKO", exact: true })).toHaveAttribute("href", importantExternalUrls.kokoriko);
+    await expect(projects.getByRole("link", { name: "2048 Radio", exact: true })).toHaveAttribute("href", importantExternalUrls.radioSource);
+    const play = projects.getByRole("link", { name: route === "/" ? "プレイ" : "plays", exact: true });
+    await expect(play).toHaveAttribute("href", importantExternalUrls.radioDemo);
+    expect(await play.evaluate((node) => getComputedStyle(node).color)).toBe(
+      await page.locator("#projects-heading").evaluate((node) => getComputedStyle(node).color),
+    );
+    await expect(page.getByRole("link", { name: route === "/" ? "OSSへの貢献" : "Open-source contributions", exact: true })).toHaveAttribute("href", importantExternalUrls.contributions[route]);
+    await expect(page.getByRole("link", { name: "Projects", exact: true })).toHaveAttribute("href", importantExternalUrls.projects[route]);
+    await expect(page.getByRole("link", { name: "Work", exact: true })).toHaveCount(0);
+    await expect(page.locator(".work-status, .project-links, .project-heading svg")).toHaveCount(0);
     await expect(page.locator("[data-client-work]")).toContainText("WordPress");
     await expect(page.locator("[data-client-work]")).toContainText("PDF");
     await expect(page.locator("[data-client-work] a")).toHaveCount(0);
@@ -142,6 +164,11 @@ for (const width of [320, 390, 768]) {
     for (const route of ["/", "/en/"]) {
       await page.goto(route);
       await expect(page.locator("[data-nav], [data-menu-button]")).toHaveCount(0);
+      await expect(page.locator(".content-columns > section h2")).toHaveText(["About", "Projects", "Work", "Contact"]);
+      if (width <= 700) {
+        const positions = await page.locator(".content-columns > section").evaluateAll((sections) => sections.map((section) => section.getBoundingClientRect().top));
+        expect(positions).toEqual([...positions].sort((a, b) => a - b));
+      }
       const contact = page.getByRole("link", { name: /Contact on X/ });
       await contact.scrollIntoViewIfNeeded();
       await expect(contact).toBeInViewport();
@@ -171,7 +198,7 @@ test("keyboard navigation reaches content and Contact; reduced motion suppresses
   await expect(character).toBeFocused();
   await page.keyboard.press("Enter");
   expect(await character.locator("img").evaluate((img) => getComputedStyle(img).animationName)).toBe("none");
-  for (let i = 0; i < 8; i++) {
+  for (let i = 0; i < await page.locator("a, button, summary").count(); i++) {
     await page.keyboard.press("Tab");
     if (await page.getByRole("link", { name: /Contact on X/ }).evaluate((link) => link === document.activeElement)) break;
   }
@@ -215,17 +242,25 @@ for (const route of ["/", "/en/", "/not-found"]) {
   });
 }
 
-for (const width of [1920, 2487]) {
+for (const [width, height] of [[1920, 1080], [2487, 1305]]) {
   test(`the portfolio stays compact and centered at ${width}px`, async ({ page }) => {
-    await page.setViewportSize({ width, height: 1305 });
+    await page.setViewportSize({ width, height });
     for (const route of ["/", "/en/"]) {
       await page.goto(route);
       const bounds = await page.locator(".page").boundingBox();
+      expect(bounds.y).toBeGreaterThanOrEqual(0);
+      expect(bounds.y + bounds.height).toBeLessThanOrEqual(height);
       expect(bounds.width / width).toBeGreaterThan(0.55);
       expect(bounds.width / width).toBeLessThan(0.75);
-      const columns = page.locator(".content-column");
-      const left = await columns.nth(0).boundingBox();
-      const right = await columns.nth(1).boundingBox();
+      const left = await page.locator(".about").boundingBox();
+      const right = await page.locator(".projects").boundingBox();
+      const work = await page.locator(".work").boundingBox();
+      const contact = await page.locator(".contact").boundingBox();
+      expect(Math.abs(left.y - right.y)).toBeLessThan(1);
+      expect(work.x).toBe(left.x);
+      expect(contact.x).toBe(right.x);
+      expect(work.y).toBeGreaterThan(left.y + left.height);
+      expect(Math.abs(work.y - contact.y)).toBeLessThan(1);
       expect(left.width).toBeGreaterThan(right.width);
       expect(left.x + left.width).toBeLessThan(right.x);
       expect(bounds.x).toBeGreaterThan(0);
@@ -248,17 +283,16 @@ test("hover and keyboard focus give feedback without moving the link hit area", 
   await page.mouse.move(0, 0);
   await expect.poll(() => icon.evaluate((node) => getComputedStyle(node).transform)).toBe(startTransform);
 
-  const project = page.locator(".project-item").first();
+  const project = page.locator(".project-heading a").first();
   await project.focus();
   await page.keyboard.press("Tab");
   await page.keyboard.press("Shift+Tab");
   await expect(project).toBeFocused();
   expect(await project.evaluate((node) => node.matches(":focus-visible"))).toBe(true);
-  await expect.poll(() => project.locator(".link-label").evaluate((node) => getComputedStyle(node).backgroundSize)).toBe("100% 1px");
-  const arrow = project.locator(".external-arrow");
-  await expect.poll(() => arrow.evaluate((node) => getComputedStyle(node).transform)).toBe("matrix(1, 0, 0, 1, 2, -2)");
+  await expect.poll(() => project.locator(".link-label").evaluate((node) => getComputedStyle(node).backgroundSize)).toBe("100% 1px, 100% 1px");
+  await expect(project.locator(".external-arrow")).toHaveCount(0);
   await page.keyboard.press("Tab");
-  await expect.poll(() => project.locator(".link-label").evaluate((node) => getComputedStyle(node).backgroundSize)).toBe("0% 1px");
+  await expect.poll(() => project.locator(".link-label").evaluate((node) => getComputedStyle(node).backgroundSize)).toBe("0% 1px, 100% 1px");
 });
 
 test("reduced motion keeps focus feedback and stops hover movement", async ({ page }) => {
@@ -267,14 +301,14 @@ test("reduced motion keeps focus feedback and stops hover movement", async ({ pa
   const social = page.getByRole("link", { name: "GitHub", exact: true });
   await social.hover();
   expect(await social.locator("svg").evaluate((node) => getComputedStyle(node).transform)).toBe("none");
-  const project = page.locator(".project-item").first();
+  const project = page.locator(".project-heading a").first();
   await project.focus();
   await page.keyboard.press("Tab");
   await page.keyboard.press("Shift+Tab");
   await expect(project).toBeFocused();
   expect(await project.evaluate((node) => getComputedStyle(node).outlineStyle)).toBe("solid");
-  expect(await project.locator(".external-arrow").evaluate((node) => getComputedStyle(node).transform)).toBe("none");
-  expect(await project.locator(".link-label").evaluate((node) => getComputedStyle(node).backgroundSize)).toBe("100% 1px");
+  expect(await project.evaluate((node) => getComputedStyle(node).transform)).toBe("none");
+  expect(await project.locator(".link-label").evaluate((node) => getComputedStyle(node).backgroundSize)).toBe("100% 1px, 100% 1px");
 });
 
 for (const [utcTime, before, after] of [
@@ -330,19 +364,16 @@ test("character checks hourly, pauses while hidden, and refreshes on return", as
 });
 
 for (const width of [320, 390, 701, 768, 1280, 2560]) {
-  test(`link endings and profile alignment hold at ${width}px`, async ({ page }) => {
+  test(`link targets and profile alignment hold at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 1200 });
     for (const route of ["/", "/en/"]) {
       await page.goto(route);
       const layout = await page.evaluate(() => {
         const rect = (selector) => document.querySelector(selector).getBoundingClientRect();
-        const endings = [...document.querySelectorAll(".link-ending")].map((ending) => {
-          const range = document.createRange();
-          range.selectNodeContents(ending.firstChild);
-          const word = range.getBoundingClientRect();
-          const arrow = ending.querySelector("svg").getBoundingClientRect();
-          const heading = ending.closest("h3").getBoundingClientRect();
-          return { sameLine: arrow.top < word.bottom && arrow.bottom > word.top, right: arrow.right, limit: heading.right };
+        const endings = [...document.querySelectorAll(".text-link")].map((link) => {
+          const arrow = link.querySelector("svg").getBoundingClientRect();
+          const bounds = link.getBoundingClientRect();
+          return { right: arrow.right, limit: bounds.right, height: bounds.height };
         });
         return {
           endings,
@@ -358,25 +389,25 @@ for (const width of [320, 390, 701, 768, 1280, 2560]) {
       expect(Math.abs(layout.contactGap - layout.fontSize)).toBeLessThan(1);
       if (width > 700) expect(layout.headingAlignment).toBeLessThan(1);
       for (const ending of layout.endings) {
-        expect(ending.sameLine).toBe(true);
+        expect(ending.height).toBeGreaterThanOrEqual(44);
         expect(ending.right).toBeLessThanOrEqual(ending.limit + 1);
       }
     }
   });
 }
 
-test("touch activation brightens project and work titles without moving them", async ({ browser }) => {
+test("touch activation brightens project and contribution links without moving them", async ({ browser }) => {
   const context = await browser.newContext({ hasTouch: true, isMobile: true, viewport: { width: 390, height: 844 } });
   const page = await context.newPage();
   await page.goto("http://127.0.0.1:8790/en/");
   // Observe the tap feedback locally without opening an external destination.
   await page.evaluate(() => document.addEventListener("click", (event) => event.preventDefault()));
   const session = await context.newCDPSession(page);
-  for (const selector of ["a.project-item", "a.work-item"]) {
+  for (const selector of [".project-heading a", ".contributions .heading-link"]) {
     const link = page.locator(selector).first();
     await link.scrollIntoViewIfNeeded();
     const before = await link.boundingBox();
-    const title = link.locator("h3");
+    const title = link.locator(".link-label");
     const color = await title.evaluate((node) => getComputedStyle(node).color);
     await session.send("Input.dispatchTouchEvent", { type: "touchStart", touchPoints: [{ x: before.x + 10, y: before.y + 10 }] });
     await session.send("Input.dispatchTouchEvent", { type: "touchEnd", touchPoints: [] });
