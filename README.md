@@ -2,67 +2,39 @@
 
 ![profile-site thumbnail](./public/assets/og-image-profile-site.png)
 
-日本語・英語に対応した、Cloudflare Pages上のプロフィールサイトです。
+日本語・英語に対応した[プロフィールサイト](https://soltonigiri.pages.dev/)です。`public/`の静的ファイルをCloudflare Pagesで配信します。
 
-- Production: https://soltonigiri.pages.dev/
-- Runtime: static assets
-- Node.js: 22（GitHub Actionsと同じバージョン）
+## 開発
 
-## セットアップと起動
+Node.js 22以上で実行します。
 
 ```bash
 npm ci
 npm run dev
 ```
 
-`http://localhost:8788`でローカルサイトが起動します。`npm run dev`は`public/`を配信します。
+[localhost:8788](http://localhost:8788)で確認できます。日本語版は`public/index.html`、英語版は`public/en/index.html`です。スタイルとJavaScriptは共通です。
 
-## 構成
-
-```text
-public/
-  index.html                 日本語版
-  en/index.html              英語版
-  script.js                  おにぎりの動作、年表示
-  style.css                  共通スタイル
-  assets/immutable/          本番配信用のAVIF・WebP・SVG
-tests/site.spec.js           Playwright E2E・アクセシビリティテスト
-scripts/lighthouse.mjs       Lighthouse検査
-wrangler.jsonc               Cloudflare Pages設定
-```
-
-## テスト
+## 検証
 
 ```bash
-# HTML、JavaScript、内部リンク
 npm run check
-
-# Wranglerのテストサーバーを自動起動してPlaywrightを実行
+npx playwright install chromium
 npm run test:e2e
 ```
 
-Lighthouseは、先に別ターミナルでローカルサーバーを起動してから実行します。
+HTML・JavaScript・内部リンクと、ブラウザ上の操作・表示・アクセシビリティを確認します。
 
-```bash
-npm run dev
-npm run test:lighthouse
-```
-
-GitHub Actionsでは、`npm run check`、Playwright E2E、LighthouseをNode.js 22で実行します。
+Lighthouseは、別ターミナルで`npm run dev`を起動してから`npm run test:lighthouse`で実行します。
 
 ## デプロイ
 
-Cloudflare Pagesプロジェクト名は`soltonigiri`、配信ディレクトリは`public/`、本番ブランチは`main`です。GitHub連携では`main`の更新が本番デプロイになります。
-
-Wranglerから明示的に本番へデプロイする場合は、認証先を確認してから実行します。
+Cloudflare Pagesのプロジェクト名は`soltonigiri`、配信ディレクトリは`public/`です。GitHub連携では`main`の更新時に公開します。手動で公開する場合は次を実行します。
 
 ```bash
-npx wrangler whoami
 npx wrangler pages deploy public --project-name soltonigiri --branch main
 ```
 
-デプロイ後は、返されたdeployment URLとProduction URLの両方を確認します。
-
 ## ライセンス
 
-`public/assets/`を除くソースコードは[MIT License](./LICENSE)で公開しています。画像、ビジュアルアイデンティティ、第三者のロゴ・商標はMIT Licenseの対象外です。詳細は[NOTICE.md](./NOTICE.md)を参照してください。
+`public/assets/`を除くソースコードは[MIT License](LICENSE)です。画像、ビジュアルアイデンティティ、第三者のロゴ・商標の扱いは[NOTICE.md](NOTICE.md)を参照してください。

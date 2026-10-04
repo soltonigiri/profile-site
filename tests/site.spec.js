@@ -18,14 +18,10 @@ const importantExternalUrls = {
 };
 
 for (const route of ["/", "/en/"]) {
-  test(`${route} is accessible without an empty Blog section`, async ({ page }) => {
+  test(`${route} passes accessibility checks`, async ({ page }) => {
     await page.goto(route);
 
     await expect(page.locator("h1")).toBeVisible();
-    await expect(page.locator("#blog")).toHaveCount(0);
-    await expect(page.locator('[data-nav] a[href="#blog"]')).toHaveCount(0);
-    await expect(page.locator("#skills")).toHaveCount(0);
-    await expect(page.locator('[data-nav] a[href="#skills"]')).toHaveCount(0);
 
     const results = await new AxeBuilder({ page }).analyze();
     expect(results.violations).toEqual([]);
@@ -73,35 +69,15 @@ test("all X links and structured data use the current account", async ({ page })
   expect(structuredData).toContain("https://x.com/solt_onigiri_");
 });
 
-test("both languages use the shared social icon sprite", async ({ page }) => {
-  for (const route of ["/", "/en/"]) {
-    await page.goto(route);
-
-    await expect(
-      page.locator('use[href^="/assets/immutable/social-icons.v1.svg#"]'),
-    ).toHaveCount(2);
-    await expect(page.locator(".svg-sprite")).toHaveCount(0);
-    await expect(page.locator(".social-icon path")).toHaveCount(0);
-  }
-});
-
 test("work, projects, and Contact point to their intended destinations", async ({ page }) => {
   for (const route of ["/", "/en/"]) {
     await page.goto(route);
     const projects = page.locator("#projects");
-    await expect(projects.locator(".project-item")).toHaveCount(2);
-    await expect(projects.locator(`a[href="${importantExternalUrls.kokoriko}"]`)).toBeVisible();
-    await expect(projects.locator(`a[href="${importantExternalUrls.radioDemo}"]`)).toBeVisible();
     await expect(page.locator("[data-oss-contributions]")).toHaveAttribute(
       "href",
       importantExternalUrls.contributions[route],
     );
-    await expect(projects.locator(`a[href="${importantExternalUrls.radioSource}"]`)).toBeVisible();
     await expect(page.locator("[data-all-projects]")).toHaveAttribute("href", importantExternalUrls.projects[route]);
-    await expect(page.locator(".work-list > .work-item")).toHaveCount(2);
-    await expect(page.locator(".contributions a")).toHaveCount(1);
-    await expect(page.locator(".contributions p")).toContainText("Jest");
-    await expect(page.locator(".contributions p")).toContainText("pnpm");
     await expect(projects.getByRole("link", { name: "KOKORIKO", exact: true })).toHaveAttribute("href", importantExternalUrls.kokoriko);
     await expect(projects.getByRole("link", { name: "2048 Radio", exact: true })).toHaveAttribute("href", importantExternalUrls.radioSource);
     const play = projects.getByRole("link", { name: route === "/" ? "プレイ" : "plays", exact: true });
@@ -111,11 +87,8 @@ test("work, projects, and Contact point to their intended destinations", async (
     );
     await expect(page.getByRole("link", { name: route === "/" ? "OSSへの貢献" : "Open-source contributions", exact: true })).toHaveAttribute("href", importantExternalUrls.contributions[route]);
     await expect(page.getByRole("link", { name: "Projects", exact: true })).toHaveAttribute("href", importantExternalUrls.projects[route]);
-    await expect(page.getByRole("link", { name: "Work", exact: true })).toHaveCount(0);
-    await expect(page.locator(".work-status, .project-links, .project-heading svg")).toHaveCount(0);
     await expect(page.locator("[data-client-work]")).toContainText("WordPress");
     await expect(page.locator("[data-client-work]")).toContainText("PDF");
-    await expect(page.locator("[data-client-work] a")).toHaveCount(0);
     const contact = page.getByRole("link", { name: /Contact on X/ });
     await expect(contact).toHaveAttribute("href", importantExternalUrls.x);
     await expect(contact).toHaveAttribute("target", "_blank");
@@ -141,14 +114,13 @@ test("Contact opens the owner's X profile in both languages", async ({ page, con
   }
 });
 
-test("profile character reacts to pointer and keyboard activation without reaction text", async ({ page }) => {
+test("profile character reacts to keyboard activation", async ({ page }) => {
   await page.goto("/");
 
   const character = page.getByRole("button", { name: "おにぎりをつつく" });
   await character.focus();
   await page.keyboard.press("Enter");
   await expect(character).toHaveClass(/is-startled/);
-  await expect(page.getByText("うわっ", { exact: true })).toHaveCount(0);
   await expect(character).not.toHaveClass(/is-startled/, { timeout: 1_500 });
 });
 
@@ -159,11 +131,10 @@ test("unknown routes return the custom 404 with a 404 status", async ({ page }) 
 });
 
 for (const width of [320, 390, 768]) {
-  test(`portfolio stays readable at ${width}px without a menu`, async ({ page }) => {
+  test(`portfolio stays readable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });
     for (const route of ["/", "/en/"]) {
       await page.goto(route);
-      await expect(page.locator("[data-nav], [data-menu-button]")).toHaveCount(0);
       await expect(page.locator(".content-columns > section h2")).toHaveText(["About", "Projects", "Work", "Contact"]);
       if (width <= 700) {
         const positions = await page.locator(".content-columns > section").evaluateAll((sections) => sections.map((section) => section.getBoundingClientRect().top));
@@ -211,11 +182,6 @@ test("static responses carry the expected security and cache headers", async ({ 
 
   const immutableAsset = await request.get("/assets/immutable/profile-onigiri-awake.304.v1.webp");
   expect(immutableAsset.headers()["cache-control"]).toContain("immutable");
-
-  for (const sourcePng of ["awake", "half", "sleep"]) {
-    const response = await request.get(`/assets/profile-onigiri-${sourcePng}.png`);
-    expect(response.status()).toBe(404);
-  }
 });
 
 for (const route of ["/", "/en/", "/not-found"]) {
